@@ -20,6 +20,7 @@ import WorkIcon from '@material-ui/icons/Work';
 import SchoolIcon from '@material-ui/icons/School';
 import StarIcon from '@material-ui/icons/Star';
 import SimpleReactValidator from 'simple-react-validator';
+import  * as $ from 'jquery';
 export interface IEditDocumentState {
 
   docs: any[];
@@ -46,6 +47,7 @@ export interface IEditDocumentState {
   subCategoryKey: string;
   publishOption: string;
   tkey: any;
+  hideIfDocAttached:string;
 }
 
 export default class EditDocument extends React.Component<IEditDocumentProps,IEditDocumentState, {}> {
@@ -77,7 +79,9 @@ export default class EditDocument extends React.Component<IEditDocumentProps,IEd
        subCategoryKey: "",
        publishOption: "",
        DocumentAdded: "none",
+       hideIfDocAttached:"",
     };
+    this._versionHistory=this._versionHistory.bind(this);
 
 }
   public async componentDidMount() {
@@ -90,13 +94,14 @@ export default class EditDocument extends React.Component<IEditDocumentProps,IEd
           });
           console.log(this.props.createdocument);
           if (this.props.createdocument) {
-          this.setState({ hidecreate: true,hideedit:false });
+          this.setState({ hidecreate: true,hideedit:false,hideIfDocAttached:"none" });
           }
           if(this.props.project){
           this.setState({hideproject:false});
           }
           this.getVersionHistory();
           this._getCurrentUser();
+          
   }
   public componentWillMount = () => {
     this.validator = new SimpleReactValidator({
@@ -193,9 +198,29 @@ private _onCancel = () => {
       categoryKey: "",
       subCategoryKey: "",
       publishOption: "",
-  })
+      expiredate:"",
+  });}
+private _versionHistory = ()=>{
+  return(
+ 
+  <IFrameDialog
+    url={this.state.siteurl + "/_layouts/15/Versions.aspx?list=%7Bda53146b-3f5c-4321-926e-c3c2adbff323%7D&ID=1&IsDlg=0"}                        
+    title="Version History"
+    hidden={false}
+    // onDismiss={this.onCancel}
+    modalProps={{
+        isBlocking: true,
+        styles: { main: { maxWidth: "700px !important", width: "600px !important", height: "800px !important" } }
+    }}
+    dialogContentProps={{
+        type: DialogType.close,
+        showCloseButton: true
+    }}
+    width={'800px'}
+    height={'500px'}
+/>);
+          
 }
-
   public render(): React.ReactElement<IEditDocumentProps> {
     const BusinessUnit: IDropdownOption[] = [
 
@@ -224,6 +249,7 @@ private _onCancel = () => {
     return (
       <div className={ styles.editDocument }>
          <div>
+          
             <Pivot aria-label="Large Link Size Pivot Example">
               <PivotItem headerText="Document Info">
                 <div style={{ marginLeft: "auto",marginRight:"auto",width:"30rem" }}>
@@ -312,6 +338,7 @@ private _onCancel = () => {
                             </TextField>
                         </div>
                     </div>
+                   <div style={{display:this.state.hideIfDocAttached}}>
                     <Label >Select a Template:</Label>  <Dropdown id="t7"
                         placeholder="Select an option"
                         options={this.state.docs} onChanged={this.templatechange}
@@ -326,7 +353,7 @@ private _onCancel = () => {
                             <Checkbox label="Create Document ? " boxSide="end" onChange={this._onCreateDocChecked} />
                         </TooltipHost>
                     </div>
-
+                    </div> 
                     <div style={{ display: this.state.hideDirectPublish, padding: "5px 0 0 14px" }}>
                         <table>
                             <tr>
@@ -378,7 +405,7 @@ private _onCancel = () => {
                         <table style={{ float: "right" }}>
                             <tr>
                                 <div>
-                                    <td style={{ display: "flex" }}>
+                                    <td style={{ display: "flex" ,padding: "0 0 0 14px"}}>
                                         <Label style={{ color: "red", fontSize: "23px" }}>*</Label>
                                         <label style={{ fontStyle: "italic", fontSize: "12px" }}>fields are mandatory </label>
                                     </td>
@@ -389,29 +416,21 @@ private _onCancel = () => {
                             </tr>
 
                         </table>
-                    </DialogFooter>
-                        </div>
-                           
-                        </PivotItem>
-                        <PivotItem headerText="Version History">
-                        <IFrameDialog
-                        url={this.state.siteurl + "/_layouts/15/Versions.aspx?list=%7Bda53146b-3f5c-4321-926e-c3c2adbff323%7D&ID=1&IsDlg=0"}
-                        title="Version History"
-                        hidden={false}
-                        // onDismiss={this.onCancel}
-                        modalProps={{
-                            isBlocking: true,
-                            styles: { main: { maxWidth: "700px !important", width: "600px !important", height: "800px !important" } }
-                        }}
-                        dialogContentProps={{
-                            type: DialogType.close,
-                            showCloseButton: true
-                        }}
-                        width={'800px'}
-                        height={'500px'}
-                    />
+                    </DialogFooter>                        
+                        </div>    
 
+    {/* //VersionHistroy                         */}
+                        </PivotItem><PivotItem headerText="Version History">
+                          {/* {this._versionHistory()}                        */}                      
+                        
+
+                        <div>                          
+                        <iframe src={this.state.siteurl + "/_layouts/15/Versions.aspx?list=%7Bda53146b-3f5c-4321-926e-c3c2adbff323%7D&ID=1&IsDlg=0"} style={{overflow: "hidden",width:"100%",border:"white"}}></iframe>
+                        </div>
                         </PivotItem>
+
+      {/* vertical Timeline */}
+
     <PivotItem headerText="Revision History">
               <div style={{ width: "100%" }}>                       
                 <div> 
