@@ -2,7 +2,8 @@ import * as React from 'react';
 import styles from './DocumentApproval.module.scss';
 import { IDocumentApprovalProps } from './IDocumentApprovalProps';
 import { escape } from '@microsoft/sp-lodash-subset';
-import { DefaultButton, Dropdown, IDropdownOption, Label, TextField } from 'office-ui-fabric-react';
+import { DefaultButton, DialogFooter, Dropdown, IDropdownOption, Label, TextField } from 'office-ui-fabric-react';
+import SimpleReactValidator from 'simple-react-validator';
 export interface IDocumentApprovalState {
   requestor: any;
   LinkToDoc: any;
@@ -10,18 +11,26 @@ export interface IDocumentApprovalState {
   dueDate: any;
   DCCComments: any;
   hideproject: boolean;
+  publishOptionKey: string;
+  publishOption: string;
+  status:string;
+  statusKey:string;
 }
 export default class DocumentApproval extends React.Component<IDocumentApprovalProps, IDocumentApprovalState, {}> {
+  private validator: SimpleReactValidator;
   public constructor(props: IDocumentApprovalProps) {
     super(props);
     this.state = {
-
+      publishOptionKey: "",
       requestor: "",
       LinkToDoc: "",
       requestorComments: "",
       dueDate: "",
       DCCComments: "",
-      hideproject: true
+      hideproject: true,
+      publishOption: "",
+      status:"",
+      statusKey:"",
     };
   }
   public async componentDidMount() {
@@ -29,6 +38,22 @@ export default class DocumentApproval extends React.Component<IDocumentApprovalP
     if (this.props.project) {
       this.setState({ hideproject: false });
     }
+  }
+  public componentWillMount = () => {
+    this.validator = new SimpleReactValidator({
+        messages: {
+            required: "Please enter mandatory fields"
+        }
+    });
+  
+  }
+  public _drpdwnPublishFormat(option: { key: any; text: any }) {
+    //console.log(option.key);
+    this.setState({ publishOptionKey: option.key, publishOption: option.text });
+  }
+  public _status(option: { key: any; text: any }) {
+    //console.log(option.key);
+    this.setState({ statusKey: option.key, status: option.text });
   }
   public render(): React.ReactElement<IDocumentApprovalProps> {
     const Status: IDropdownOption[] = [
@@ -84,26 +109,38 @@ export default class DocumentApproval extends React.Component<IDocumentApprovalP
           label="Publish Option"
           style={{ marginBottom: '10px', backgroundColor: "white" }}
           options={PublishOption}
-          // onChanged={this.ChangeId}
-          // selectedKey={this.state.Status ? this.state.Status.key : undefined}
+          onChanged={this._drpdwnPublishFormat}
+          selectedKey={this.state.publishOptionKey}
           required />
+          <div style={{ color: "#dc3545" }}>{this.validator.message("subCategory", this.state.publishOptionKey, "required")}{" "}</div> 
           <Dropdown 
           placeholder="Select Status" 
           label="Status"
           style={{ marginBottom: '10px', backgroundColor: "white" }}
           options={Status}
-          // onChanged={this.ChangeId}
-          // selectedKey={this.state.Status ? this.state.Status.key : undefined}
+          onChanged={this._status}
+           selectedKey={this.state.statusKey}
           required />
-
+          <div style={{ color: "#dc3545" }}>{this.validator.message("subCategory", this.state.statusKey, "required")}{" "}</div> 
         <TextField label="Comments" id="Comments" multiline autoAdjustHeight />
-        
-        <div style={{padding:"0 0 0 38rem"}} >
-  <Label style={{ color: "red",fontStyle:"italic",fontSize:"12px" }}>* fields are mandatory </Label>
-  </div>
-          <DefaultButton id="b1" style={{ marginTop: '20px', float: "right", borderRadius: "10px", border: "1px solid gray" }}>Cancel</DefaultButton >
-          <DefaultButton id="b2" style={{ marginTop: '20px', float: "right", marginRight: "10px", borderRadius: "10px", border: "1px solid gray" }}>Submit</DefaultButton >
-          <DefaultButton id="b2" style={{ marginTop: '20px', float: "right", marginRight: "10px", borderRadius: "10px", border: "1px solid gray" }}>Save</DefaultButton >
+        <DialogFooter>
+                        <table style={{ float: "right" }}>
+                            <tr>
+                                <div>
+                                    <td style={{ display: "flex" ,padding:"0 0 0 33rem"}}>
+                                        <Label style={{ color: "red", fontSize: "23px" }}>*</Label>
+                                        <label style={{ fontStyle: "italic", fontSize: "12px" }}>fields are mandatory </label>
+                                    </td>
+                                    
+                                    <DefaultButton id="b1" style={{ marginTop: '20px', float: "right", borderRadius: "10px", border: "1px solid gray" }}>Cancel</DefaultButton >
+                                    <DefaultButton id="b2" style={{ marginTop: '20px', float: "right", marginRight: "10px", borderRadius: "10px", border: "1px solid gray" }}>Submit</DefaultButton >
+                                    <DefaultButton id="b2" style={{ marginTop: '20px', float: "right", marginRight: "10px", borderRadius: "10px", border: "1px solid gray" }}>Save</DefaultButton >
+
+                                </div>
+                            </tr>
+
+                        </table>2
+                    </DialogFooter>           
           <br />
         </div>
         </div>
