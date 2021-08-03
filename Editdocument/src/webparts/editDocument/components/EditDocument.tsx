@@ -201,7 +201,7 @@ private _onCancel = () => {
       expiredate:"",
   });}
 private _versionHistory = ()=>{
-  return(
+  return( 
  
   <IFrameDialog
     url={this.state.siteurl + "/_layouts/15/Versions.aspx?list=%7Bda53146b-3f5c-4321-926e-c3c2adbff323%7D&ID=1&IsDlg=0"}                        
@@ -226,6 +226,7 @@ private _versionHistory = ()=>{
 
       { key: '1', text: 'BU1' },
       { key: '2', text: 'BU2' },
+      { key: '3', text: 'BU3' },
 
   ];
   const Category: IDropdownOption[] = [
