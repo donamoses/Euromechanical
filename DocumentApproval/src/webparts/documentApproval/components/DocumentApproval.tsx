@@ -2,7 +2,7 @@ import * as React from 'react';
 import styles from './DocumentApproval.module.scss';
 import { IDocumentApprovalProps } from './IDocumentApprovalProps';
 import { escape } from '@microsoft/sp-lodash-subset';
-import { DefaultButton, DialogFooter, Dropdown, IDropdownOption, Label, TextField } from 'office-ui-fabric-react';
+import { DefaultButton, DialogFooter, Dropdown, IDropdownOption, Label, MessageBar, MessageBarType, TextField } from 'office-ui-fabric-react';
 import SimpleReactValidator from 'simple-react-validator';
 export interface IDocumentApprovalState {
   requestor: any;
@@ -15,6 +15,7 @@ export interface IDocumentApprovalState {
   publishOption: string;
   status:string;
   statusKey:string;
+  approveDocument:string;
 }
 export default class DocumentApproval extends React.Component<IDocumentApprovalProps, IDocumentApprovalState, {}> {
   private validator: SimpleReactValidator;
@@ -31,7 +32,11 @@ export default class DocumentApproval extends React.Component<IDocumentApprovalP
       publishOption: "",
       status:"",
       statusKey:"",
+      approveDocument:'none',
     };
+    this._drpdwnPublishFormat=this._drpdwnPublishFormat.bind(this);
+    this._status=this._status.bind(this);
+    this._docApproval=this._docApproval.bind(this);
   }
   public async componentDidMount() {
       console.log(this.props.project);
@@ -54,6 +59,17 @@ export default class DocumentApproval extends React.Component<IDocumentApprovalP
   public _status(option: { key: any; text: any }) {
     //console.log(option.key);
     this.setState({ statusKey: option.key, status: option.text });
+  }
+  private _docApproval =()=>{
+            if(this.validator.fieldValid("publishFormat") && this.validator.fieldValid("status")){
+              this.validator.hideMessages();
+              this.setState({ approveDocument: "" });
+              setTimeout(() => this.setState({ approveDocument: 'none' }), 1000);
+            }
+            else {
+              this.validator.showMessages();
+              this.forceUpdate();
+            }
   }
   public render(): React.ReactElement<IDocumentApprovalProps> {
     const Status: IDropdownOption[] = [
@@ -112,7 +128,7 @@ export default class DocumentApproval extends React.Component<IDocumentApprovalP
           onChanged={this._drpdwnPublishFormat}
           selectedKey={this.state.publishOptionKey}
           required />
-          <div style={{ color: "#dc3545" }}>{this.validator.message("subCategory", this.state.publishOptionKey, "required")}{" "}</div> 
+          <div style={{ color: "#dc3545" }}>{this.validator.message("publishFormat", this.state.publishOptionKey, "required")}{" "}</div> 
           <Dropdown 
           placeholder="Select Status" 
           label="Status"
@@ -121,9 +137,12 @@ export default class DocumentApproval extends React.Component<IDocumentApprovalP
           onChanged={this._status}
            selectedKey={this.state.statusKey}
           required />
-          <div style={{ color: "#dc3545" }}>{this.validator.message("subCategory", this.state.statusKey, "required")}{" "}</div> 
+          <div style={{ color: "#dc3545" }}>{this.validator.message("status", this.state.statusKey, "required")}{" "}</div> 
         <TextField label="Comments" id="Comments" multiline autoAdjustHeight />
         <DialogFooter>
+        <div style={{ display: this.state.approveDocument }}>
+                        <MessageBar messageBarType={MessageBarType.success} isMultiline={false}>  Document Approved Successfully.</MessageBar>
+        </div>
                         <table style={{ float: "right" }}>
                             <tr>
                                 <div>
@@ -132,8 +151,8 @@ export default class DocumentApproval extends React.Component<IDocumentApprovalP
                                         <label style={{ fontStyle: "italic", fontSize: "12px" }}>fields are mandatory </label>
                                     </td>
                                     
-                                    <DefaultButton id="b1" style={{ marginTop: '20px', float: "right", borderRadius: "10px", border: "1px solid gray" }}>Cancel</DefaultButton >
-                                    <DefaultButton id="b2" style={{ marginTop: '20px', float: "right", marginRight: "10px", borderRadius: "10px", border: "1px solid gray" }}>Submit</DefaultButton >
+                                    <DefaultButton id="b1" style={{ marginTop: '20px', float: "right", borderRadius: "10px", border: "1px solid gray"  }}>Cancel</DefaultButton >
+                                    <DefaultButton id="b2" style={{ marginTop: '20px', float: "right", marginRight: "10px", borderRadius: "10px", border: "1px solid gray" }}  onClick={this._docApproval}>Submit</DefaultButton >
                                     <DefaultButton id="b2" style={{ marginTop: '20px', float: "right", marginRight: "10px", borderRadius: "10px", border: "1px solid gray" }}>Save</DefaultButton >
 
                                 </div>
