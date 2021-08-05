@@ -33,7 +33,8 @@ export default class VerticalTimeLineNewWebPart extends BaseClientSideWebPart<IV
         description: this.properties.description,
         siteUrl: this.context.pageContext.web.serverRelativeUrl,
         listName: this.properties.listName,
-        tableWithTimeLine:this.properties.tableWithTimeLine
+        tableWithTimeLine:this.properties.tableWithTimeLine,
+        context:this.context,
       }
     );
 

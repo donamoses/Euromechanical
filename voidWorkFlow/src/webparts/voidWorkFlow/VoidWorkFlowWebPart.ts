@@ -16,7 +16,7 @@ export interface IVoidWorkFlowWebPartProps {
   description: string;
 }
 
-export default class VoidWorkFlowWebPart extends BaseClientSideWebPart<IVoidWorkFlowWebPartProps> {
+export default class VoidWorkFlowWebPart extends BaseClientSideWebPart<IVoidWorkFlowProps> {
   public onInit(): Promise<void> {
     return super.onInit().then(_ => {
       sp.setup({
@@ -30,6 +30,8 @@ export default class VoidWorkFlowWebPart extends BaseClientSideWebPart<IVoidWork
       {
         description: this.properties.description,
         context: this.context,
+        DueDateDefault:this.properties.DueDateDefault,
+        RetentionPeriod:this.properties.RetentionPeriod,
       }
     );
 
@@ -57,7 +59,13 @@ export default class VoidWorkFlowWebPart extends BaseClientSideWebPart<IVoidWork
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
-                })
+                }),
+                PropertyPaneTextField('DueDateDefault', {
+                  label: "Due Date Default In Days"
+                }),
+                PropertyPaneTextField('RetentionPeriod', {
+                  label: "Retention Period"
+                }),
               ]
             }
           ]

@@ -4,6 +4,7 @@ import { IDocumentApprovalProps } from './IDocumentApprovalProps';
 import { escape } from '@microsoft/sp-lodash-subset';
 import { DefaultButton, DialogFooter, Dropdown, IDropdownOption, Label, MessageBar, MessageBarType, TextField } from 'office-ui-fabric-react';
 import SimpleReactValidator from 'simple-react-validator';
+
 export interface IDocumentApprovalState {
   requestor: any;
   LinkToDoc: any;
@@ -88,8 +89,7 @@ export default class DocumentApproval extends React.Component<IDocumentApprovalP
       <div className={styles.documentApproval}>
          <div style={{ marginLeft: "auto",marginRight:"auto",width:"50rem" }}>
         <div className={styles.alignCenter}> Approval form</div>
-        <div >
-         
+        <div style={{marginTop:"17px"}} >         
           <Label >Document :  <a href={this.state.LinkToDoc}>NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</a></Label>
           <table>
             <tr>
@@ -105,18 +105,28 @@ export default class DocumentApproval extends React.Component<IDocumentApprovalP
               <td><Label >Requested Date : 21 JUL 2021 </Label></td></tr></table><table>
               <tr>
               <td><Label> Requestor Comment:</Label>Requested to review the document </td>
-            </tr></table><table>
+            </tr></table>
+            <table>
             <tr hidden={this.state.hideproject} >
               <td><Label>DCC : SUBHA RAVEENDRAN </Label></td>
               <td><Label >DCC Date : 21 JUL 2021 </Label></td></tr></table><table><tr hidden={this.state.hideproject}>
               <td><Label> DCC Comment:</Label>Requested to dcc level review the document</td>
-            </tr></table><table>
-            <tr  >
-              <td><Label>Reviewer : SUBHA RAVEENDRAN </Label></td>
-              <td><Label >Review Date : 21 JUL 2021 </Label></td></tr></table><table><tr>
-              <td><Label> Review Comment:</Label>Requested to approve the document</td>
-            </tr>
+            </tr></table>
+            <div >
+            <table className={styles.tableClass} style={{marginTop:"13px"}}>
+              <th>Reviewer
+              </th>
+              <th>Review Date
+              </th>
+              <th>Review Comment:
+              </th>
+                <tr className={styles.td} >
+                  <td style={{textAlign:"center"}}> SUBHA RAVEENDRAN </td>
+                  <td style={{textAlign:"center"}}> 21 JUL 2021 </td>
+                  <td style={{textAlign:"center"}} >Requested to approve the document</td>
+                </tr>
           </table>
+          </div>
 
         </div>
         <div style={{ marginTop: '30px' }}>
@@ -143,19 +153,19 @@ export default class DocumentApproval extends React.Component<IDocumentApprovalP
         <div style={{ display: this.state.approveDocument }}>
                         <MessageBar messageBarType={MessageBarType.success} isMultiline={false}>  Document Approved Successfully.</MessageBar>
         </div>
-                        <table style={{ float: "right" }}>
+                        <table style={{ float: "right",rowGap:"0px" }}>
                             <tr>
-                                <div>
+                                
                                     <td style={{ display: "flex" ,padding:"0 0 0 33rem"}}>
                                         <Label style={{ color: "red", fontSize: "23px" }}>*</Label>
                                         <label style={{ fontStyle: "italic", fontSize: "12px" }}>fields are mandatory </label>
                                     </td>
                                     
-                                    <DefaultButton id="b1" style={{ marginTop: '20px', float: "right", borderRadius: "10px", border: "1px solid gray"  }}>Cancel</DefaultButton >
-                                    <DefaultButton id="b2" style={{ marginTop: '20px', float: "right", marginRight: "10px", borderRadius: "10px", border: "1px solid gray" }}  onClick={this._docApproval}>Submit</DefaultButton >
-                                    <DefaultButton id="b2" style={{ marginTop: '20px', float: "right", marginRight: "10px", borderRadius: "10px", border: "1px solid gray" }}>Save</DefaultButton >
+                                    <DefaultButton id="b1" style={{ float: "right", borderRadius: "10px", border: "1px solid gray"  }}>Cancel</DefaultButton >
+                                    <DefaultButton id="b2" style={{  float: "right", marginRight: "10px", borderRadius: "10px", border: "1px solid gray" }}  onClick={this._docApproval}>Submit</DefaultButton >
+                                    <DefaultButton id="b2" style={{ float: "right", marginRight: "10px", borderRadius: "10px", border: "1px solid gray" }}>Save</DefaultButton >
 
-                                </div>
+                                
                             </tr>
 
                         </table>2

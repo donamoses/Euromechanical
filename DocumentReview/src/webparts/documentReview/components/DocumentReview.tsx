@@ -2,10 +2,10 @@ import * as React from 'react';
 import styles from './DocumentReview.module.scss';
 import { IDocumentReviewProps } from './IDocumentReviewProps';
 import { escape } from '@microsoft/sp-lodash-subset';
-import { Checkbox, DatePicker, DefaultButton, Dropdown, FontWeights, getTheme, IconButton, IDropdownOption, IIconProps, Label, mergeStyleSets, TextField } from 'office-ui-fabric-react';
+import { Checkbox, DatePicker, DefaultButton, DialogFooter, Dropdown, FontWeights, getTheme, IconButton, IDropdownOption, IIconProps, Label, mergeStyleSets, MessageBar, MessageBarType, TextField } from 'office-ui-fabric-react';
 import ReactHtmlParser, { processNodes, convertNodeToElement, htmlparser2 } from 'react-html-parser';
 // import Moment from 'react-moment';
-
+import SimpleReactValidator from 'simple-react-validator';
 export interface IDocumentReviewState {
   // currentuser: any;
   // verifierId: any;
@@ -18,8 +18,14 @@ export interface IDocumentReviewState {
   // dcc: any;
   DCCComments:any;
   hideproject: boolean;
+  reviewDocument:string;
+  status:string;
+  statuskey:string;
+  comments:string;
+  
 }
 export default class DocumentReview extends React.Component<IDocumentReviewProps,IDocumentReviewState, {}> {
+  private validator: SimpleReactValidator;
   public constructor(props: IDocumentReviewProps) {
     super(props);
     this.state = {
@@ -33,8 +39,14 @@ export default class DocumentReview extends React.Component<IDocumentReviewProps
       dueDate:"",
       // dcc: "",
       DCCComments:"",
-       hideproject: true
+       hideproject: true,
+       reviewDocument:"none",
+       status:"",
+       statuskey:"",
+       comments:"",
     };
+    this._docReview=this._docReview.bind(this);
+    this._drpdwnStatus=this._drpdwnStatus.bind(this);
   }
   public async componentDidMount() {
       console.log(this.props.project);
@@ -42,6 +54,38 @@ export default class DocumentReview extends React.Component<IDocumentReviewProps
       this.setState({ hideproject: false });
     }
   }
+  public componentWillMount = () => {
+    this.validator = new SimpleReactValidator({
+        messages: {
+            required: "Please enter mandatory fields"
+        }
+    });
+  
+  }
+  private _docReview =()=>{
+    if(this.validator.fieldValid("status") ){
+      this.validator.hideMessages();
+      this.setState({ reviewDocument: "" });
+      setTimeout(() => this.setState({ reviewDocument: 'none' }), 1000);
+    }
+    else {
+      this.validator.showMessages();
+      this.forceUpdate();
+    }
+}
+private _cancel =()=>{
+  this.setState({
+    statuskey:"",
+    comments:"",
+  });
+}
+public _drpdwnStatus(option: { key: any; text: any }) {
+  //console.log(option.key);
+  this.setState({ statuskey: option.key, status: option.text });
+}
+private _commentChange = (ev: React.FormEvent<HTMLInputElement>, Comment?: string) => {
+  this.setState({ comments: Comment || '' });
+}
   public render(): React.ReactElement<IDocumentReviewProps> {
     const Status: IDropdownOption[] = [
 
@@ -56,7 +100,7 @@ export default class DocumentReview extends React.Component<IDocumentReviewProps
           {/* <h1 className={styles.title} >Review form </h1> */}
           
         
-        <div >
+        <div style={{marginTop:"17px"}}>
          
           <Label >Document :  <a href={this.state.LinkToDoc}>NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</a></Label>
           
@@ -80,8 +124,7 @@ export default class DocumentReview extends React.Component<IDocumentReviewProps
               <table> <tr hidden={this.state.hideproject}>
               <td><Label> DCC Comment:</Label>Requested to dcc level review the document</td>
             </tr>
-            </table>
-          
+            </table>         
           
           
           </div>
@@ -91,18 +134,33 @@ export default class DocumentReview extends React.Component<IDocumentReviewProps
           label="Status"
           style={{ marginBottom: '10px', backgroundColor: "white" }}
           options={Status}
-          // onChanged={this.ChangeId}
-          // selectedKey={this.state.Status ? this.state.Status.key : undefined}
+          onChanged={this._drpdwnStatus}
+          selectedKey={this.state.statuskey}
           required />
+          <div style={{ color: "#dc3545" }}>{this.validator.message("status", this.state.statuskey, "required")}{" "}</div> 
+            <TextField label="Comments" id="Comments" value={this.state.comments} onChange={this._commentChange} multiline autoAdjustHeight />
+            <br />
+            <DialogFooter>
+            <div style={{ display: this.state.reviewDocument }}>
+                            <MessageBar messageBarType={MessageBarType.success} isMultiline={false}>  Document Reviewed Successfully.</MessageBar>
+            </div>
+                        <table style={{ float: "right",rowGap:"0px" }}>
+                            <tr>
+                                
+                                    <td style={{ display: "flex" ,padding:"0 0 0 33rem"}}>
+                                        <Label style={{ color: "red", fontSize: "23px" }}>*</Label>
+                                        <label style={{ fontStyle: "italic", fontSize: "12px" }}>fields are mandatory </label>
+                                    </td>
+                                    
+                                    <DefaultButton id="b1" style={{ float: "right", borderRadius: "10px", border: "1px solid gray" }} onClick={this._cancel}>Cancel</DefaultButton >
+                                    <DefaultButton id="b2" style={{  float: "right", marginRight: "10px", borderRadius: "10px", border: "1px solid gray" }}  onClick={this._docReview}>Submit</DefaultButton >
+                                    <DefaultButton id="b2" style={{ float: "right", marginRight: "10px", borderRadius: "10px", border: "1px solid gray" }}>Save</DefaultButton >
 
-        <TextField label="Comments" id="Comments" multiline autoAdjustHeight />
-        <br />
-        <div style={{padding:"0 0 0 38rem"}} >
-  <Label style={{ color: "red",fontStyle:"italic",fontSize:"12px" }}>* fields are mandatory </Label>
-  </div>
-          <DefaultButton id="b1" style={{ marginTop: '20px', float: "right", borderRadius: "10px", border: "1px solid gray" }}>Cancel</DefaultButton >
-          <DefaultButton id="b2" style={{ marginTop: '20px', float: "right", marginRight: "10px", borderRadius: "10px", border: "1px solid gray" }}>Submit</DefaultButton >
-          <DefaultButton id="b2" style={{ marginTop: '20px', float: "right", marginRight: "10px", borderRadius: "10px", border: "1px solid gray" }}>Save</DefaultButton >
+                                
+                            </tr>
+
+                        </table>
+                    </DialogFooter>   
           <br />
         </div>
         </div>

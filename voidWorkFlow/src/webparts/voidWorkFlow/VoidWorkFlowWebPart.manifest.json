@@ -21,7 +21,8 @@
     "description": { "default": "voidWorkFlow description" },
     "officeFabricIconFontName": "Page",
     "properties": {
-      "description": "voidWorkFlow"
+      "description": "voidWorkFlow",
+      "DueDateDefault":"5"
     }
   }]
 }

@@ -3,10 +3,10 @@ import styles from './VerticalTimeLineNew.module.scss';
 import { IVerticalTimeLineNewProps } from './IVerticalTimeLineNewProps';
 import { escape } from '@microsoft/sp-lodash-subset';
 import { Timeline, TimelineItem }  from 'vertical-timeline-component-for-react';
-import { ColorPicker, Dialog, DialogType, FontWeights, getTheme, Icon, IconButton, IIconProps, ITooltipHostStyles, mergeStyleSets, Modal, TooltipHost } from '@fluentui/react';
+import { ColorPicker, Dialog, DialogType, FontWeights, getTheme, Icon, IconButton, IIconProps, ITooltipHostStyles, mergeStyleSets, MessageBar, MessageBarType, Modal, TooltipHost } from '@fluentui/react';
 import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { IFrameDialog } from "@pnp/spfx-controls-react/lib/IFrameDialog";
-
+import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/PeoplePicker";
 export interface IVerticalTimeLineNewState{
 iframeModalclose:boolean;
 tableShow:string;
@@ -14,6 +14,8 @@ tableinTimeLine:string;
 showModal: boolean;
 reviewed:string;
 showReviewModal:boolean;
+delegateUser:any;
+delagatePeoplePicker:string;
 }
 const cancelIcon: IIconProps = { iconName: 'Cancel' };
 const theme = getTheme();
@@ -34,7 +36,20 @@ const contentStyles = mergeStyleSets({
       display: 'flex',
       alignItems: 'center',
       fontWeight: FontWeights.semibold,
-      padding: '12px 12px 14px 24px',
+      padding: '12px 12px 14px 284px',
+    },
+  ],
+  header1: [
+    // eslint-disable-next-line deprecation/deprecation
+    theme.fonts.xLargePlus,
+    {
+      flex: '1 1 auto',
+      borderTop: `4px solid ${theme.palette.themePrimary}`,
+      color: theme.palette.neutralPrimary,
+      display: 'flex',
+      alignItems: 'center',
+      fontWeight: FontWeights.semibold,
+      padding: '12px 12px 14px 109px',
     },
   ],
   body: {
@@ -83,9 +98,13 @@ tableinTimeLine:"none",
       showModal: false,
       reviewed:"none",
       showReviewModal:false,
+      delegateUser:"",
+      delagatePeoplePicker:"none",
     };
     this._versionHistory=this._versionHistory.bind(this);
     this._reviewedHistory=this._reviewedHistory.bind(this);
+    this._delegateClick=this._delegateClick.bind(this);
+    this._delegateSubmit=this._delegateSubmit.bind(this);
   }
 
   public async componentDidMount() {
@@ -113,15 +132,33 @@ tableinTimeLine:"none",
     
   }
   private _closeModal = (): void => {
-    this.setState({ iframeModalclose: false,showModal:false,showReviewModal:false });
+    this.setState({ iframeModalclose: false,showModal:false,showReviewModal:false,delagatePeoplePicker:"none" });
   }
-  private loadLink = () => {
+  public _delegatePeoplePicker = (items: any[]) => {
 
-    return (
-      window.open(this.props.siteUrl + "/_layouts/15/Versions.aspx?list=%7Bda53146b-3f5c-4321-926e-c3c2adbff323%7D&ID=1&IsDlg=0")
-    );
+    console.log(items);
+    let getSelectedUsers = [];
+
+    for (let item in items) {
+        getSelectedUsers.push(items[item].id);
+    }
+    this.setState({ delegateUser: getSelectedUsers[0] });
+    console.log(getSelectedUsers);
+    
+
+} 
+    
+ public _delegateClick = () => {
+this.setState({
+  delagatePeoplePicker:"",
+});
+}
+
+public _delegateSubmit = () => {
+  this.setState({
+    delagatePeoplePicker:"none",
+  });
   }
-  
   public render(): React.ReactElement<IVerticalTimeLineNewProps> {
     return (
       <div className={ styles.verticalTimeLineNew }>  
@@ -425,7 +462,7 @@ tableinTimeLine:"none",
       >
 
         <div className={contentStyles.header}>
-          <span>WorkFlow Status</span>
+          <span style={{textAlign:"center",fontSize:"17px"}}>WorkFlow Status</span>
           <IconButton
             iconProps={cancelIcon}
             ariaLabel="Close popup modal"
@@ -482,8 +519,33 @@ tableinTimeLine:"none",
                               calloutProps={calloutProps}
                               styles={hostStyles}
                             >
-                              <IconButton iconProps={Share} title=" " ariaLabel=" " />
-                            </TooltipHost></td>
+                              <IconButton iconProps={Share} title=" " ariaLabel=" "  onClick={this._delegateClick} />
+                            </TooltipHost>
+                               </td>
+                               <td> <div style={{display:this.state.delagatePeoplePicker}}>
+                          <div style={{display:"flex"}}>
+                          <PeoplePicker
+                          context={this.props.context}
+                          titleText="Delegate to "
+                          personSelectionLimit={1}
+                          groupName={""} // Leave this blank in case you want to filter from all users    
+                          showtooltip={true}
+                          disabled={false}
+                          ensureUser={true}
+                          onChange={this._delegatePeoplePicker}
+                          // selectedItems={this._getVerifier}
+                          //defaultSelectedUsers={[this.state.approver]}
+                          showHiddenInUI={false}
+                          required={false}
+                          principalTypes={[PrincipalType.User]}
+                          resolveDelay={1000}
+                          />
+                          <div style={{marginTop:"26px",marginLeft:"20px"}}>
+                          <PrimaryButton text="Delegate" onClick={this._delegateSubmit}/>
+                          </div>
+                          </div>
+                            </div>
+                </td>
                             </tr>
                             <tr>
                               <td>Eve Maria Thomas</td>
@@ -663,8 +725,8 @@ tableinTimeLine:"none",
         containerClassName={contentStyles.container}
       >
 
-        <div className={contentStyles.header}>
-          <span>Review Details</span>
+        <div className={contentStyles.header1}>
+          <span style={{textAlign:"center",fontSize:"17px"}}>Review Details</span>
           <IconButton
             iconProps={cancelIcon}
             ariaLabel="Close popup modal"
