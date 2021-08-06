@@ -2,7 +2,7 @@ import * as React from 'react';
 import styles from './DocumentApproval.module.scss';
 import { IDocumentApprovalProps } from './IDocumentApprovalProps';
 import { escape } from '@microsoft/sp-lodash-subset';
-import { DefaultButton, DialogFooter, Dropdown, IDropdownOption, Label, MessageBar, MessageBarType, TextField } from 'office-ui-fabric-react';
+import { DefaultButton, DialogFooter, Dropdown, IDropdownOption, Label, Link, MessageBar, MessageBarType, TextField } from 'office-ui-fabric-react';
 import SimpleReactValidator from 'simple-react-validator';
 
 export interface IDocumentApprovalState {
@@ -38,6 +38,7 @@ export default class DocumentApproval extends React.Component<IDocumentApprovalP
     this._drpdwnPublishFormat=this._drpdwnPublishFormat.bind(this);
     this._status=this._status.bind(this);
     this._docApproval=this._docApproval.bind(this);
+    this._openRevisionHistory=this._openRevisionHistory.bind(this);
   }
   public async componentDidMount() {
       console.log(this.props.project);
@@ -72,6 +73,9 @@ export default class DocumentApproval extends React.Component<IDocumentApprovalP
               this.forceUpdate();
             }
   }
+  private _openRevisionHistory=()=>{
+    window.open("https://ccsdev01.sharepoint.com/sites/TrialTest/SitePages/RevisionHistory.aspx");
+  }
   public render(): React.ReactElement<IDocumentApprovalProps> {
     const Status: IDropdownOption[] = [
 
@@ -89,7 +93,17 @@ export default class DocumentApproval extends React.Component<IDocumentApprovalP
       <div className={styles.documentApproval}>
          <div style={{ marginLeft: "auto",marginRight:"auto",width:"50rem" }}>
         <div className={styles.alignCenter}> Approval form</div>
-        <div style={{marginTop:"17px"}} >         
+        <br></br>
+         <div></div>
+           <div style={{display:"flex"}}>
+             <div>Document ID : NOT/SHML/INT-PRC/AM-00009</div>
+             <div style={{padding:"0 0 0 366px"}}>
+             <Link onClick={this._openRevisionHistory} underline>
+             Revision History
+            </Link></div>
+           </div>
+           <br></br>
+        <div >         
           <Label >Document :  <a href={this.state.LinkToDoc}>NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</a></Label>
           <table>
             <tr>

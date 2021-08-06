@@ -2,7 +2,7 @@ import * as React from 'react';
 import styles from './VoidWorkFlow.module.scss';
 import { IVoidWorkFlowProps } from './IVoidWorkFlowProps';
 import { escape } from '@microsoft/sp-lodash-subset';
-import { DatePicker, DefaultButton, DialogFooter, ITextStyles, ITooltipHostStyles, Label, MessageBar, MessageBarType, TextField, TooltipHost } from 'office-ui-fabric-react';
+import { DatePicker, DefaultButton, DialogFooter, ITextStyles, ITooltipHostStyles, Label, Link, MessageBar, MessageBarType, TextField, TooltipHost } from 'office-ui-fabric-react';
 import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/PeoplePicker";
 import { sp } from "@pnp/sp/presets/all";
 import SimpleReactValidator from 'simple-react-validator';
@@ -20,6 +20,7 @@ export interface IVoidWorkFlowState {
   RetentionPeriod:any;
   RequestSend:string;
   comments:string;
+  hideproject: boolean;
 }
 const textbox : Partial<ITextStyles> = { root:{width:"100%"}};
 const commentbox : Partial<ITextStyles> = { root:{width:"100%"}};
@@ -38,8 +39,10 @@ export default class VoidWorkFlow extends React.Component<IVoidWorkFlowProps,IVo
       RetentionPeriod:"",
       RequestSend:"none",
       comments:"",
+      hideproject: true
     };
     this._onCancel=this._onCancel.bind(this);
+    this._openRevisionHistory=this._openRevisionHistory.bind(this);
   }
 
   public async componentDidMount() {
@@ -48,6 +51,7 @@ export default class VoidWorkFlow extends React.Component<IVoidWorkFlowProps,IVo
           currentuser:currentUser.Title,
       });     
     });
+
         const currentDate = new Date();
          let days = this.props.DueDateDefault;
          console.log(Number(days));
@@ -57,6 +61,9 @@ export default class VoidWorkFlow extends React.Component<IVoidWorkFlowProps,IVo
         this.setState({
           ExpiryDate:currentDate,
         });
+        if (this.props.project) {
+          this.setState({ hideproject: false });
+        }
    
   }
   public componentWillMount = () => {
@@ -105,7 +112,9 @@ export default class VoidWorkFlow extends React.Component<IVoidWorkFlowProps,IVo
   private _commentsChange = (ev: React.FormEvent<HTMLInputElement>, Comment?: string) => {
     this.setState({ comments: Comment });
 }
-
+private _openRevisionHistory=()=>{
+  window.open("https://ccsdev01.sharepoint.com/sites/TrialTest/SitePages/RevisionHistory.aspx");
+}
   public render(): React.ReactElement<IVoidWorkFlowProps> {
     return (
       <div className={ styles.voidWorkFlow }>
@@ -114,7 +123,10 @@ export default class VoidWorkFlow extends React.Component<IVoidWorkFlowProps,IVo
            <br></br>
            <div style={{display:"flex"}}>
              <div>Document ID : NOT/SHML/INT-PRC/AM-00009</div>
-             <div style={{padding:"0 0 0 366px"}}><a href="https://ccsdev01.sharepoint.com/sites/TrialTest/SitePages/RevisionHistory.aspx">Revision History</a></div>
+             <div style={{padding:"0 0 0 366px"}}>
+             <Link onClick={this._openRevisionHistory} underline>
+             Revision History
+            </Link></div>
            </div>
            <br></br>
            <Label >Document Name:  <a href={this.state.LinkToDoc}>NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</a></Label>
@@ -181,8 +193,12 @@ export default class VoidWorkFlow extends React.Component<IVoidWorkFlowProps,IVo
              </table> 
            </div>
            
+                  <table>
+
+                  <tr><td> <TextField label="Comments" id="Comments" multiline autoAdjustHeight value={this.state.comments}onChange={this._commentsChange}  /></td></tr>
+
+                  </table>
                 
-                <TextField label="Comments" id="Comments" multiline autoAdjustHeight value={this.state.comments}onChange={this._commentsChange} style={{width:"80%"}} />
                 <div style={{ display: this.state.RequestSend }}>
                         <MessageBar messageBarType={MessageBarType.success} isMultiline={false}>  Void request send successfully.</MessageBar>
                     </div>  
@@ -190,7 +206,7 @@ export default class VoidWorkFlow extends React.Component<IVoidWorkFlowProps,IVo
                         <table style={{ float: "right" }}>
                             <tr>
                                 <div>
-                                    <td style={{ display: "flex" ,padding: "0 0 0 14px"}}>
+                                    <td style={{ display: "flex" ,padding: "0 0 0 617px"}}>
                                         <Label style={{ color: "red", fontSize: "23px" }}>*</Label>
                                         <label style={{ fontStyle: "italic", fontSize: "12px" }}>fields are mandatory </label>
                                     </td>

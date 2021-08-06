@@ -5,4 +5,6 @@ export interface IVoidWorkFlowProps {
   context: WebPartContext;
   DueDateDefault:number;
   RetentionPeriod:string;
+  project:string;
+
 }

@@ -2,11 +2,10 @@ import * as React from 'react';
 import styles from './EditDocument.module.scss';
 import { IEditDocumentProps } from './IEditDocumentProps';
 import { escape } from '@microsoft/sp-lodash-subset';
-import { Checkbox, DatePicker, DefaultButton, DialogFooter, Dropdown, IDropdownOption, ITextFieldProps, ITextFieldStyleProps, ITooltipHostStyles, Label, Pivot, PivotItem, TextField, TooltipHost } from 'office-ui-fabric-react';
+import { Checkbox, DatePicker, DefaultButton, DialogFooter, Dropdown, IDropdownOption, IPivotStyles, ITextFieldProps, ITextFieldStyleProps,  Label, PrimaryButton, TextField,  } from 'office-ui-fabric-react';
 import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/PeoplePicker";
-const calloutProps = { gapSpace: 0 };
-const hostStyles: Partial<ITooltipHostStyles> = { root: { display: 'inline-block' } };
-import { Dialog, DialogType } from 'office-ui-fabric-react/lib/Dialog';
+import { ColorPicker, Dialog, DialogType, FontWeights, getTheme, Icon, IconButton, IIconProps, ITooltipHostStyles, mergeStyleSets, MessageBar, MessageBarType, Modal, TooltipHost } from '@fluentui/react';
+
 import { IFrameDialog } from "@pnp/spfx-controls-react/lib/IFrameDialog";
 import { sp } from '@pnp/sp';
 import "@pnp/sp/sites";
@@ -14,13 +13,84 @@ import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 import "@pnp/sp/items";
 import "@pnp/sp/site-users/web";
-import { VerticalTimeline, VerticalTimelineElement } from 'react-vertical-timeline-component';
-import 'react-vertical-timeline-component/style.min.css';
 import WorkIcon from '@material-ui/icons/Work';
 import SchoolIcon from '@material-ui/icons/School';
 import StarIcon from '@material-ui/icons/Star';
 import SimpleReactValidator from 'simple-react-validator';
 import  * as $ from 'jquery';
+import { Pivot, PivotItem } from '@fluentui/react/lib/Pivot';
+import { Timeline, TimelineItem }  from 'vertical-timeline-component-for-react';
+
+const cancelIcon: IIconProps = { iconName: 'Cancel' };
+const theme = getTheme();
+const contentStyles = mergeStyleSets({
+  container: {
+    display: 'flex',
+    flexFlow: 'column nowrap',
+    alignItems: 'stretch',
+
+  },
+  header: [
+    // eslint-disable-next-line deprecation/deprecation
+    theme.fonts.xLargePlus,
+    {
+      flex: '1 1 auto',
+      //borderTop: `4px solid ${theme.palette.themePrimary}`,
+      color: theme.palette.neutralPrimary,
+      display: 'flex',
+      alignItems: 'center',
+      fontWeight: FontWeights.semibold,
+      padding: '12px 12px 14px 284px',
+    },
+  ],
+  header1: [
+    // eslint-disable-next-line deprecation/deprecation
+    theme.fonts.xLargePlus,
+    {
+      flex: '1 1 auto',
+     // borderTop: `4px solid ${theme.palette.themePrimary}`,
+      color: theme.palette.neutralPrimary,
+      display: 'flex',
+      alignItems: 'center',
+      fontWeight: FontWeights.semibold,
+      padding: '12px 12px 14px 109px',
+    },
+  ],
+  body: {
+    flex: '4 4 auto',
+    padding: '0 24px 24px 24px',
+    overflowY: 'hidden',
+    selectors: {
+      p: { margin: '14px 0' },
+      'p:first-child': { marginTop: 0 },
+      'p:last-child': { marginBottom: 0 },
+    },
+  },
+});
+const MyIcon = () => <Icon iconName="Cancel" />;
+const hostStyles: Partial<ITooltipHostStyles> = { root: { display: 'inline-block' } };
+const calloutProps = { gapSpace: 0 };
+const Cancel: IIconProps = { iconName: 'Cancel' };
+const ReminderTime: IIconProps = { iconName: 'ReminderTime' };
+const Comment: IIconProps = { iconName: 'CommentActive' };
+const Share: IIconProps = { iconName: 'Share' };
+const dialogContentProps = {
+  type: DialogType.normal,
+  title: 'Missing Subject',
+  closeButtonAriaLabel: 'Close',
+  subText: 'Do you want to send this message without a subject?',
+};
+const iconButtonStyles = {
+  root: {
+    color: theme.palette.neutralPrimary,
+    marginLeft: 'auto',
+    marginTop: '4px',
+    marginRight: '2px',
+  },
+  rootHovered: {
+    color: theme.palette.neutralDark,
+  },
+};
 export interface IEditDocumentState {
 
   docs: any[];
@@ -48,7 +118,19 @@ export interface IEditDocumentState {
   publishOption: string;
   tkey: any;
   hideIfDocAttached:string;
+  dcc:string;
+  //for timelinr
+  iframeModalclose:boolean;
+tableShow:string;
+tableinTimeLine:string;
+showModal: boolean;
+reviewed:string;
+showReviewModal:boolean;
+delegateUser:any;
+delagatePeoplePicker:string;
 }
+
+const pivot : Partial<IPivotStyles> = { root:{width:"100%"}};
 
 export default class EditDocument extends React.Component<IEditDocumentProps,IEditDocumentState, {}> {
   private validator: SimpleReactValidator;
@@ -80,8 +162,23 @@ export default class EditDocument extends React.Component<IEditDocumentProps,IEd
        publishOption: "",
        DocumentAdded: "none",
        hideIfDocAttached:"",
+       dcc:"",
+       //for time line
+       iframeModalclose : true,
+      tableShow:"none",
+      tableinTimeLine:"none",
+      showModal: false,
+      reviewed:"none",
+      showReviewModal:false,
+      delegateUser:"",
+      delagatePeoplePicker:"none",
     };
     this._versionHistory=this._versionHistory.bind(this);
+    //for time line
+    this._versionHistory=this._versionHistory.bind(this);
+    this._reviewedHistory=this._reviewedHistory.bind(this);
+    this._delegateClick=this._delegateClick.bind(this);
+    this._delegateSubmit=this._delegateSubmit.bind(this);
 
 }
   public async componentDidMount() {
@@ -89,6 +186,7 @@ export default class EditDocument extends React.Component<IEditDocumentProps,IEd
           const rootwebData = await sp.site.rootWeb();
           console.log(rootwebData);
           var webValue = rootwebData.ResourcePath.DecodedUrl;  //alert(webValue); 
+          
           this.setState({
             siteurl: webValue
           });
@@ -101,6 +199,7 @@ export default class EditDocument extends React.Component<IEditDocumentProps,IEd
           }
           this.getVersionHistory();
           this._getCurrentUser();
+          
           
   }
   public componentWillMount = () => {
@@ -200,26 +299,52 @@ private _onCancel = () => {
       publishOption: "",
       expiredate:"",
   });}
-private _versionHistory = ()=>{
-  return( 
- 
-  <IFrameDialog
-    url={this.state.siteurl + "/_layouts/15/Versions.aspx?list=%7Bda53146b-3f5c-4321-926e-c3c2adbff323%7D&ID=1&IsDlg=0"}                        
-    title="Version History"
-    hidden={false}
-    // onDismiss={this.onCancel}
-    modalProps={{
-        isBlocking: true,
-        styles: { main: { maxWidth: "700px !important", width: "600px !important", height: "800px !important" } }
-    }}
-    dialogContentProps={{
-        type: DialogType.close,
-        showCloseButton: true
-    }}
-    width={'800px'}
-    height={'500px'}
-/>);
-          
+
+
+//for veritacl time line
+private _versionHistory(){
+  this.setState({
+    tableShow:"",
+    showModal:true,
+  });  
+   
+  
+}
+private _reviewedHistory(){
+  this.setState({
+    reviewed:"",
+    showReviewModal:true,
+  });  
+   
+  
+}
+private _closeModal = (): void => {
+  this.setState({ iframeModalclose: false,showModal:false,showReviewModal:false,delagatePeoplePicker:"none" });
+}
+public _delegatePeoplePicker = (items: any[]) => {
+
+  console.log(items);
+  let getSelectedUsers = [];
+
+  for (let item in items) {
+      getSelectedUsers.push(items[item].id);
+  }
+  this.setState({ delegateUser: getSelectedUsers[0] });
+  console.log(getSelectedUsers);
+  
+
+} 
+  
+public _delegateClick = () => {
+this.setState({
+delagatePeoplePicker:"",
+});
+}
+
+public _delegateSubmit = () => {
+this.setState({
+  delagatePeoplePicker:"none",
+});
 }
   public render(): React.ReactElement<IEditDocumentProps> {
     const BusinessUnit: IDropdownOption[] = [
@@ -248,18 +373,17 @@ private _versionHistory = ()=>{
 
   ];
     return (
-      <div className={ styles.editDocument }>
-         <div>
+      <div className={ styles.editDocument }>        
           
-            <Pivot aria-label="Large Link Size Pivot Example">
-              <PivotItem headerText="Document Info">
-                <div style={{ marginLeft: "auto",marginRight:"auto",width:"30rem" }}>
-                  <div style={{fontSize:"18px",fontWeight:"bold",textAlign:"center"}}> Edit Document</div>
+         <Pivot aria-label="Links of Tab Style Pivot Example" linkFormat="tabs">
+              <PivotItem headerText="Document Info" >
+                <div style={{ marginLeft: "7%",marginRight:"auto",width:"30rem" }}>
+                  {/* <div style={{fontSize:"18px",fontWeight:"bold",textAlign:"center"}}> Edit Document</div> */}
                   < TextField required id="t1"
                         label="Name"                       
                         onChange={this._titleChange}
                         //placeholder="Organization Details"                        
-                        value={"Organization Details"}>                          
+                        value={"Migration Policy"}>                          
                   </TextField>
                     <div style={{ color: "#dc3545" }}>{this.validator.message("Name", this.state.title, "required|alpha_num_space")}{" "}</div>
                   <Dropdown id="t3" label="Business Unit"                        
@@ -320,7 +444,25 @@ private _versionHistory = ()=>{
                       showHiddenInUI={false}
                       // defaultSelectedUsers={[this.state.setapprover]}
                       principalTypes={[PrincipalType.User]}
-                      resolveDelay={1000} />                       
+                      resolveDelay={1000} />   
+                        <div  hidden={this.state.hideproject}>
+                         <PeoplePicker
+                            context={this.props.context}
+                            titleText="DCC"
+                            personSelectionLimit={1}
+                            groupName={""} // Leave this blank in case you want to filter from all users    
+                            showtooltip={true}
+                            disabled={false}
+                            ensureUser={true}
+                            // selectedItems={this._getVerifier}
+                            defaultSelectedUsers={[this.state.dcc]}
+                            showHiddenInUI={false}
+                            // isRequired={true}
+                            principalTypes={[PrincipalType.User]}
+                            resolveDelay={1000}
+                            />
+
+                        </div>                  
                    
                    <div style={{ display: "flex" }}>
                         <div>
@@ -421,7 +563,9 @@ private _versionHistory = ()=>{
                         </div>    
 
     {/* //VersionHistroy                         */}
-                        </PivotItem><PivotItem headerText="Version History">
+                        </PivotItem>
+                       
+               <PivotItem headerText="Version History">
                           {/* {this._versionHistory()}                        */}                      
                         
 
@@ -430,251 +574,450 @@ private _versionHistory = ()=>{
                         </div>
                         </PivotItem>
 
-      {/* vertical Timeline */}
+      {/* vertical Timeline */}    
 
-    <PivotItem headerText="Revision History">
-              <div style={{ width: "100%" }}>                       
-                <div> 
-                 <VerticalTimeline>
-                    <VerticalTimelineElement
-                        className="vertical-timeline-element--work"
-                        contentStyle={{ background: 'rgb(233 157 127)', color: 'rgb(19 18 18)',padding:" 1px 0 0 18pxs" }}
-                        contentArrowStyle={{ borderRight: '7px solid  rgb(19 18 18)' }}
-                        date="24 Jul 2021"
-                        iconStyle={{ background: 'rgb(0, 120, 212)', color: '#fff' }}
-                        icon={<WorkIcon />}
-                    >
-                    <h3 style={{ fontSize: "20px", color: "rgb(220,20,60)" }}>Published</h3>
-                    <h4 className="vertical-timeline-element-subtitle">NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</h4>
-                    <p style={{fontSize:'12px'}}>
-                        Verified By : Subha Raveendran
-                        <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
-                          Approved By : Sunil John
-                        </div>
-                        <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
-                          Revision : 1
-                        </div>
-                        <br></br>
-                    </p>
-                   </VerticalTimelineElement>
-                      <VerticalTimelineElement
-                        className="vertical-timeline-element--work"
-                        contentStyle={{ background: 'rgb(233 205 126)', color: 'rgb(19 18 18)' }}
-                        contentArrowStyle={{ borderRight: '7px solid  rgb(19 18 18)' }}
-                        date="23 Jul 2021 "
-                        iconStyle={{ background: 'rgb(33, 150, 243)', color: '#fff' }}
-                        icon={<WorkIcon />}
-                      >
-                        <h3 style={{ fontSize: "20px", color: "rgb(220,20,60)" }}>Approved</h3>
-                        <h4 className="vertical-timeline-element-subtitle">NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</h4>
-                        <p style={{fontSize:'12px'}}>
-                            <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
-                              Approved By :  Sunil John
-                            </div>
-                            <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
-                            Revision : 0
-                            </div>
-                            <br></br>
-                          </p>
-                      </VerticalTimelineElement>
-                      <VerticalTimelineElement
-                          className="vertical-timeline-element--work"
-                          contentStyle={{ background: 'rgb(213 202 231)', color: 'rgb(19 18 18)' }}
-                            contentArrowStyle={{ borderRight: '7px solid  rgb(19 18 18)' }}
-                            date="22 Jul 2021"
-                            iconStyle={{ background: 'rgb(0, 120, 212)', color: '#fff' }}
-                          icon={<WorkIcon />}
-                      >
-                        <h3 style={{ fontSize: "20px", color: "rgb(220,20,60)" }}>Verified</h3>
-                        <h4 className="vertical-timeline-element-subtitle">NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</h4>
-                        <p style={{fontSize:'12px'}}>
-                            Requestor: Subha Raveendran
-                            <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
-                              Verified By : Subha Raveendran
-                            </div>
-                            <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
-                              Revision : 0
-                            </div>
-                            <br></br>
-                          </p>
-                      </VerticalTimelineElement>
-                      <VerticalTimelineElement
-                          className="vertical-timeline-element--work"
-                          contentStyle={{ background: 'rgb(185 237 137)', color: 'rgb(19 18 18)' }}
-                            contentArrowStyle={{ borderRight: '7px solid  rgb(19 18 18)' }}
-                            date="21 Jul 2021"
-                            iconStyle={{ background: 'rgb(0, 120, 212)', color: '#fff' }}
-                          icon={<WorkIcon />}
-                      >
-                        <h3 style={{ fontSize: "20px", color: "rgb(220,20,60)" }}>WorkFlow Started</h3>
-                        <h4 className="vertical-timeline-element-subtitle">NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</h4>
-                        <p style={{fontSize:'12px'}}>
-                            <div> Requestor : Subha Raveendran</div>
-                            <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
-                              Verifier : Subha Raveendran  </div>
-                                <div style={{ margin: "0px 0px 0px 22px" }}>
-                                  Approver : Sunil John</div>
-
-                          
-                            <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
-                              Revision : 0
-                            </div>
-                            <br></br>
-                          </p>
-                      </VerticalTimelineElement>
-                       <VerticalTimelineElement
-                          className="vertical-timeline-element--education"
-                          contentStyle={{ background: 'rgb(155 216 235 / 65%);', color: 'rgb(19 18 18)' }}
-                          contentArrowStyle={{ borderRight: '7px solid  rgb(19 18 18)' }}
-                          date="20 Jul 2021"
-                          iconStyle={{ background: 'rgb(0, 120, 212)', color: '#fff' }}
-                          icon={<SchoolIcon />}
-                        >
-                          <h3 style={{ fontSize: "20px", color: "rgb(220,20,60)" }}> Document Created </h3>
-                          <h4 className="vertical-timeline-element-subtitle">NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</h4>
-                          <p style={{fontSize:'12px'}}>
-                      <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
-                        Originator :Sunil John
-                      </div>
-                      <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
-
-                      </div>
-                      <br></br>
-                      </p>
-                     </VerticalTimelineElement>                     
-                     <VerticalTimelineElement
-                          iconStyle={{ background: 'rgb(16, 204, 82)', color: '#fff' }}
-                          icon={<StarIcon />}
-                        />
-                    </VerticalTimeline>
-                  </div>
-                </div>
-              </PivotItem>
-                        
-                        {/* <PivotItem headerText="Transmittal History" >
-                        <div style={{ width: "80%" }}>
-                        
-                        <div> 
-                  <VerticalTimeline>
-                  <VerticalTimelineElement
-                    className="vertical-timeline-element--work"
-                    contentStyle={{ background: 'rgb(233 157 127)', color: 'rgb(19 18 18)' }}
-                    contentArrowStyle={{ borderRight: '7px solid  rgb(19 18 18)' }}
-                    date="24 Jul 2021"
-                    iconStyle={{ background: 'rgb(0, 120, 212)', color: '#fff' }}
-                    icon={<WorkIcon />}
-                  >
-                    <h3 style={{ fontSize: "20px", color: "rgb(220,20,60)" }}>Published</h3>
-                    <h4 className="vertical-timeline-element-subtitle">NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</h4>
-                    <p style={{fontSize:'12px'}}>
-                        Verified By : Subha Raveendran
-                        <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
-                          Approved By : Sunil John
-                        </div>
-                        <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
-                          Version : 1
-                        </div>
-                        <br></br>
-                      </p>
-                  </VerticalTimelineElement>
-                  <VerticalTimelineElement
-                    className="vertical-timeline-element--work"
-                    contentStyle={{ background: 'rgb(233 205 126)', color: 'rgb(19 18 18)' }}
-                    contentArrowStyle={{ borderRight: '7px solid  rgb(19 18 18)' }}
-                    date="23 Jul 2021 "
-                    iconStyle={{ background: 'rgb(33, 150, 243)', color: '#fff' }}
-                    icon={<WorkIcon />}
-                  >
-                    <h3 style={{ fontSize: "20px", color: "rgb(220,20,60)" }}>Approved</h3>
-                    <h4 className="vertical-timeline-element-subtitle">NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</h4>
-                    <p style={{fontSize:'12px'}}>
-                        <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
-                          Approved By :  Sunil John
-                        </div>
-                        <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
-                          Version : 0
-                        </div>
-                        <br></br>
-                      </p>
-                  </VerticalTimelineElement>
-                  <VerticalTimelineElement
-                    className="vertical-timeline-element--work"
-                    contentStyle={{ background: 'rgb(213 202 231)', color: 'rgb(19 18 18)' }}
-                      contentArrowStyle={{ borderRight: '7px solid  rgb(19 18 18)' }}
-                      date="22 Jul 2021"
-                      iconStyle={{ background: 'rgb(0, 120, 212)', color: '#fff' }}
-                    icon={<WorkIcon />}
-                  >
-                    <h3 style={{ fontSize: "20px", color: "rgb(220,20,60)" }}>Verified</h3>
-                    <h4 className="vertical-timeline-element-subtitle">NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</h4>
-                    <p style={{fontSize:'12px'}}>
-                        Requestor: Subha Raveendran
-                        <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
-                          Verified By : Subha Raveendran
-                        </div>
-                        <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
-                          Revision : 0
-                        </div>
-                        <br></br>
-                      </p>
-                  </VerticalTimelineElement>
-                  <VerticalTimelineElement
-                    className="vertical-timeline-element--work"
-                    contentStyle={{ background: 'rgb(185 237 137)', color: 'rgb(19 18 18)' }}
-                      contentArrowStyle={{ borderRight: '7px solid  rgb(19 18 18)' }}
-                      date="21 Jul 2021"
-                      iconStyle={{ background: 'rgb(0, 120, 212)', color: '#fff' }}
-                    icon={<WorkIcon />}
-                  >
-                    <h3 style={{ fontSize: "20px", color: "rgb(220,20,60)" }}>WorkFlow Started</h3>
-                    <h4 className="vertical-timeline-element-subtitle">NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</h4>
-                    <p style={{fontSize:'12px'}}>
-                        <div> Requestor : Subha Raveendran</div>
-                        <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
-                          Verifier : Subha Raveendran  </div>
-                            <div style={{ margin: "0px 0px 0px 22px" }}>
-                              Approver : Sunil John</div>
+              <PivotItem headerText="Revision History">
+              <div style={{ marginLeft: "7%",marginRight:"auto",width:"30rem" }}>                  
+           <Timeline lineColor={'#76bb7f'}>       
                 
-                       
-                        <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
-                          Revision : 0
-                        </div>
-                        <br></br>
-                      </p>
-                  </VerticalTimelineElement>
-                  <VerticalTimelineElement
-                    className="vertical-timeline-element--education"
-                    contentStyle={{ background: 'rgb(155 216 235 / 65%);', color: 'rgb(19 18 18)' }}
-                    contentArrowStyle={{ borderRight: '7px solid  rgb(19 18 18)' }}
-                    date="20 Jul 2021"
-                    iconStyle={{ background: 'rgb(0, 120, 212)', color: '#fff' }}
-                    icon={<SchoolIcon />}
-                  >
-                    <h3 style={{ fontSize: "20px", color: "rgb(220,20,60)" }}> Document Created </h3>
-                    <h4 className="vertical-timeline-element-subtitle">NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</h4>
-                    <p style={{fontSize:'12px'}}>
-                
-                <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
-                  Originator :Sunil John
-                </div>
-                <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
-                
-                </div>
-                <br></br>
-                </p>
-                  </VerticalTimelineElement>
-                  <VerticalTimelineElement
-                    iconStyle={{ background: 'rgb(16, 204, 82)', color: '#fff' }}
-                    icon={<StarIcon />}
-                  />
-                </VerticalTimeline>
-                        </div>
+                <TimelineItem
+                  key="002"
+                  dateText="24 Jul 2021 "
+                  dateInnerStyle={{ background: '#61b8ff', color: '#000' }}
+                  bodyContainerStyle={{
+                    background: '#ddd',
+                    padding: '20px',
+                    borderRadius: '8px',
+                    boxShadow: '0.5rem 0.5rem 2rem 0 rgba(0, 0, 0, 0.2)',
+                  }}
+                >
+                  <h3 style={{ color: '#61b8ff' }}>Under Review</h3>
+                  <h4 style={{ color: '#61b8ff' }}>NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</h4>
+                  <p style={{fontSize:'12px'}}>
+                                          <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
+                                            Approved  :  Sunil John
                                           </div>
-                        </PivotItem> */}
-                        
-                    </Pivot>
+                                          <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
+                                          Revision : 1
+                                          </div>
+                                          <br></br>
+                                          <PrimaryButton text="Details" onClick={this._versionHistory}></PrimaryButton>
+                                        </p>
+                </TimelineItem>
+                <TimelineItem
+                  key="001"
+                  dateText="23 Jul 2021"
+                  //style={{ color: '#e86971' }}
+                  dateInnerStyle={{ background: '#76bb7f' }}
+                  lineColor={"#76bb7f"} 
+                >
+                  <h3>Published</h3>
+                  <h4>NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</h4>
+                  <p style={{fontSize:'12px'}}>
+                                      Reviewer  : Subha Raveendran
+                                      <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
+                                        Approved  : Sunil John
+                                      </div>
+                                      <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
+                                        Revision : 1
+                                      </div>
+                                      <br></br>
+                                  </p>
+        </TimelineItem>
+                <TimelineItem
+                  key="001"
+                  dateText="23 Jul 2021"
+                // style={{ color: '#e86971' }}
+                  dateInnerStyle={{ background: '#76bb7f' }}
+                  lineColor={"#76bb7f"} 
+                >
+                          <h3>Reviewed</h3>
+                          <h4>NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</h4>
+                          <p style={{fontSize:'12px'}}>
+                                                  Requestor: Subha Raveendran
+                                                  <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>                                                  
+                                                  </div>
+                                                  <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
+                                                    Revision : 0
+                                                  </div>
+                                                  <br></br>
+                                                  <PrimaryButton text="Details" onClick={this._reviewedHistory}></PrimaryButton>
+                                                </p>
+                        </TimelineItem>
+                <TimelineItem
+                  key="004"
+                  dateText="21 Jul 2021"
+                  dateInnerStyle={{ background: '#76bb7f' }}
+                >
+                  <h3>WorkFlow Started</h3>
+                  <h4>NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</h4>
+                  <p style={{fontSize:'12px'}}>
+                                          <div> Requestor : Subha Raveendran</div>
+                                          <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
+                                             
+                                            <div style={{ margin: "0px 0px 0px 22px" }}>
+                                                Approver : Sunil John</div>
+                                            </div>
+                                                                        
+                                          <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
+                                            Revision : 0
+                                          </div>
+                                          <br></br>
+                                        </p>
+                </TimelineItem>
+                <TimelineItem
+                  key="004"
+                  dateText="21 Jul 2021"
+                  dateInnerStyle={{ background: '#76bb7f' }}
+                >
+                  <h3>Document Created</h3>
+                  <h4>NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</h4>
+                  <p style={{fontSize:'12px'}}>
+                                    <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
+                                      Originator :Sunil John
+                                    </div>
+                                    <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
+
+                                    </div>
+                                    <br></br>
+                                    </p>
+                </TimelineItem>
+                </Timeline>
+            <div style={{display:this.state.tableShow}} >
+            <Modal
+              isOpen={this.state.showModal}
+              onDismiss={this._closeModal}
+              containerClassName={contentStyles.container}
+            >
+
+              <div className={contentStyles.header}>
+                <span style={{textAlign:"center",fontSize:"17px"}}></span>
+                <IconButton
+                  iconProps={cancelIcon}
+                  ariaLabel="Close popup modal"
+                  onClick={this._closeModal}
+                  styles={iconButtonStyles}
+                />
                 </div>
-      </div>
+                <div style={{padding: "0 25px 0px 29px"}}>
+                <table  className={styles.tableModal}>
+                                  <tr>
+                                    <th>Reviewer</th>
+                                    <th>DueDate</th> 
+                                    <th>Status</th>
+                                    <th>Comments</th>
+                                    <th>Reminder</th>
+                                    <th>Cancel</th>
+                                    <th>Delegate</th>
+                                  </tr>
+                                  <tr  style={{border:"1px"}}>
+                                    <td>Jill</td>
+                                    <td style={{color: "red"}}>24 Jul 2021</td>
+                                    <td>Under Review</td>
+                                    <td><TooltipHost
+                                    content="Comment"
+                                    // This id is used on the tooltip itself, not the host
+                                    // (so an element with this id only exists when the tooltip is shown)                              
+                                    calloutProps={calloutProps}
+                                    styles={hostStyles}
+                                  >
+                                    <IconButton iconProps={Comment} title=" " ariaLabel=" " />
+                                  </TooltipHost></td>
+                                    <td><TooltipHost
+                                    content="ReminderTime"
+                                    // This id is used on the tooltip itself, not the host
+                                    // (so an element with this id only exists when the tooltip is shown)                              
+                                    calloutProps={calloutProps}
+                                    styles={hostStyles}
+                                  >
+                                    <IconButton iconProps={ReminderTime} title=" " ariaLabel=" " />
+                                  </TooltipHost></td>
+                                  <td><TooltipHost
+                                    content="Cancel"
+                                    // This id is used on the tooltip itself, not the host
+                                    // (so an element with this id only exists when the tooltip is shown)                              
+                                    calloutProps={calloutProps}
+                                    styles={hostStyles}
+                                  >
+                                    <IconButton iconProps={Cancel} title=" " ariaLabel=" " />
+                                  </TooltipHost></td>
+                                    <td><TooltipHost
+                                    content="Share"
+                                    // This id is used on the tooltip itself, not the host
+                                    // (so an element with this id only exists when the tooltip is shown)                              
+                                    calloutProps={calloutProps}
+                                    styles={hostStyles}
+                                  >
+                                    <IconButton iconProps={Share} title=" " ariaLabel=" "  onClick={this._delegateClick} />
+                                  </TooltipHost>
+                                    </td>
+                                    <td> <div style={{display:this.state.delagatePeoplePicker}}>
+                                <div style={{display:"flex"}}>
+                                <PeoplePicker
+                                context={this.props.context}
+                                titleText="Delegate to "
+                                personSelectionLimit={1}
+                                groupName={""} // Leave this blank in case you want to filter from all users    
+                                showtooltip={true}
+                                disabled={false}
+                                ensureUser={true}
+                                onChange={this._delegatePeoplePicker}
+                                // selectedItems={this._getVerifier}
+                                //defaultSelectedUsers={[this.state.approver]}
+                                showHiddenInUI={false}
+                                required={false}
+                                principalTypes={[PrincipalType.User]}
+                                resolveDelay={1000}
+                                />
+                                <div style={{marginTop:"26px",marginLeft:"20px"}}>
+                                <PrimaryButton text="Delegate" onClick={this._delegateSubmit}/>
+                                </div>
+                                </div>
+                                  </div>
+                      </td>
+                                  </tr>
+                                  <tr>
+                                    <td>Eve Maria Thomas</td>
+                                    <td>24 Jul 2021</td>
+                                    <td>Returned with comments</td>
+                                    <td><TooltipHost
+                                    content="• Needs to improve the amount of time spent on lesson planning [or curriculum development or marking or insert type of task] • Capable of stronger performance in training delivery especially in [insert area of weakness] •"
+                                    // This id is used on the tooltip itself, not the host
+                                    // (so an element with this id only exists when the tooltip is shown)                              
+                                    calloutProps={calloutProps}
+                                    styles={hostStyles}
+                                  >
+                                    <IconButton iconProps={Comment} title=" " ariaLabel=" " />
+                                  </TooltipHost></td>
+                                    <td><TooltipHost
+                                    content="Document is reviewed"
+                                    // This id is used on the tooltip itself, not the host
+                                    // (so an element with this id only exists when the tooltip is shown)                              
+                                    calloutProps={calloutProps}
+                                    styles={hostStyles}
+                                  >
+                                    <IconButton iconProps={ReminderTime} title=" " ariaLabel=" " />
+                                  </TooltipHost></td>
+                                  <td><TooltipHost
+                                    content="Cancel"
+                                    // This id is used on the tooltip itself, not the host
+                                    // (so an element with this id only exists when the tooltip is shown)                              
+                                    calloutProps={calloutProps}
+                                    styles={hostStyles}
+                                  >
+                                    <IconButton iconProps={Cancel} title=" " ariaLabel=" " />
+                                  </TooltipHost></td>
+                                    <td><TooltipHost
+                                    content="Share"
+                                    // This id is used on the tooltip itself, not the host
+                                    // (so an element with this id only exists when the tooltip is shown)                              
+                                    calloutProps={calloutProps}
+                                    styles={hostStyles}
+                                  >
+                                    <IconButton iconProps={Share} title=" " ariaLabel=" " />
+                                  </TooltipHost></td>
+                                  </tr>
+                                  <tr>
+                                    <td>John</td>
+                                    <td style={{color: "red"}}>24 Jul 2021</td>
+                                    <td>Under Review</td>
+                                    <td><TooltipHost
+                                    content="Comment"
+                                    // This id is used on the tooltip itself, not the host
+                                    // (so an element with this id only exists when the tooltip is shown)                              
+                                    calloutProps={calloutProps}
+                                    styles={hostStyles}
+                                  >
+                                    <IconButton iconProps={Comment} title=" " ariaLabel=" " />
+                                  </TooltipHost></td>
+                                    <td><TooltipHost
+                                    content="ReminderTime"
+                                    // This id is used on the tooltip itself, not the host
+                                    // (so an element with this id only exists when the tooltip is shown)                              
+                                    calloutProps={calloutProps}
+                                    styles={hostStyles}
+                                  >
+                                    <IconButton iconProps={ReminderTime} title=" " ariaLabel=" " />
+                                  </TooltipHost></td>
+                                  <td><TooltipHost
+                                    content="Cancel"
+                                    // This id is used on the tooltip itself, not the host
+                                    // (so an element with this id only exists when the tooltip is shown)                              
+                                    calloutProps={calloutProps}
+                                    styles={hostStyles}
+                                  >
+                                    <IconButton iconProps={Cancel} title=" " ariaLabel=" " />
+                                  </TooltipHost></td>
+                                    <td><TooltipHost
+                                    content="Share"
+                                    // This id is used on the tooltip itself, not the host
+                                    // (so an element with this id only exists when the tooltip is shown)                              
+                                    calloutProps={calloutProps}
+                                    styles={hostStyles}
+                                  >
+                                    <IconButton iconProps={Share} title=" " ariaLabel=" " />
+                                  </TooltipHost></td>
+                                  </tr>
+                                  <tr>
+                                    <td>Smith Manuel Ebraham</td>
+                                    <td>24 Jul 2021</td>
+                                    <td>Reviewed</td>
+                                    <td><TooltipHost
+                                    content="The document is reviewed."
+                                    // This id is used on the tooltip itself, not the host
+                                    // (so an element with this id only exists when the tooltip is shown)                              
+                                    calloutProps={calloutProps}
+                                    styles={hostStyles}
+                                  >
+                                    <IconButton iconProps={Comment} title=" " ariaLabel=" " />
+                                  </TooltipHost></td>
+                                    <td><TooltipHost
+                                    content="ReminderTime"
+                                    // This id is used on the tooltip itself, not the host
+                                    // (so an element with this id only exists when the tooltip is shown)                              
+                                    calloutProps={calloutProps}
+                                    styles={hostStyles}
+                                  >
+                                    <IconButton iconProps={ReminderTime} title=" " ariaLabel=" " disabled />
+                                  </TooltipHost></td>
+                                  <td><TooltipHost
+                                    content="Cancel"
+                                    // This id is used on the tooltip itself, not the host
+                                    // (so an element with this id only exists when the tooltip is shown)                              
+                                    calloutProps={calloutProps}
+                                    styles={hostStyles}
+                                  >
+                                    <IconButton iconProps={Cancel} title=" " ariaLabel=" " disabled/>
+                                  </TooltipHost></td>
+                                    <td><TooltipHost
+                                    content="Share"
+                                    // This id is used on the tooltip itself, not the host
+                                    // (so an element with this id only exists when the tooltip is shown)                              
+                                    calloutProps={calloutProps}
+                                    styles={hostStyles}
+                                  >
+                                    <IconButton iconProps={Share} title=" " ariaLabel=" " disabled/>
+                                  </TooltipHost></td>
+                                  </tr>
+                                  <tr>
+                                    <td>Sam</td>
+                                    <td>24 Jul 2021</td>
+                                    <td>Reviewed</td>
+                                    <td><TooltipHost
+                                    content="The document is reviewed."
+                                    // This id is used on the tooltip itself, not the host
+                                    // (so an element with this id only exists when the tooltip is shown)                              
+                                    calloutProps={calloutProps}
+                                    styles={hostStyles}
+                                  >
+                                    <IconButton iconProps={Comment} title=" " ariaLabel=" " />
+                                  </TooltipHost></td>
+                                    <td><TooltipHost
+                                    content="ReminderTime"
+                                    // This id is used on the tooltip itself, not the host
+                                    // (so an element with this id only exists when the tooltip is shown)                              
+                                    calloutProps={calloutProps}
+                                    styles={hostStyles}
+                                  >
+                                    <IconButton iconProps={ReminderTime} title=" " ariaLabel=" " disabled />
+                                  </TooltipHost></td>
+                                  <td><TooltipHost
+                                    content="Cancel"
+                                    // This id is used on the tooltip itself, not the host
+                                    // (so an element with this id only exists when the tooltip is shown)                              
+                                    calloutProps={calloutProps}
+                                    styles={hostStyles}
+                                  >
+                                    <IconButton iconProps={Cancel} title=" " ariaLabel=" " disabled/>
+                                  </TooltipHost></td>
+                                    <td><TooltipHost
+                                    content="Share"
+                                    // This id is used on the tooltip itself, not the host
+                                    // (so an element with this id only exists when the tooltip is shown)                              
+                                    calloutProps={calloutProps}
+                                    styles={hostStyles}
+                                  >
+                                    <IconButton iconProps={Share} title=" " ariaLabel=" " disabled/>
+                                  </TooltipHost></td>
+                                  </tr>
+                                </table> 
+              
+                <br />
+                <br />
+              </div>
+            </Modal>
+              </div>
+            <div style={{display:this.state.reviewed}}>
+        <Modal
+        isOpen={this.state.showReviewModal}
+        onDismiss={this._closeModal}
+        containerClassName={contentStyles.container}
+      >
+
+        <div className={contentStyles.header1}>
+          <span style={{textAlign:"center",fontSize:"17px"}}>Review Details</span>
+          <IconButton
+            iconProps={cancelIcon}
+            ariaLabel="Close popup modal"
+            onClick={this._closeModal}
+            styles={iconButtonStyles}
+          />
+          </div>
+          <div style={{padding: "0 25px 0px 29px"}}>
+           <table >
+                            <tr>
+                              <th>Reviewer</th>
+                              <th>DueDate</th> 
+                              <th>Status</th>
+                              <th>Comments</th>
+                             
+                            </tr>
+                            <tr>
+                              <td>Jill</td>
+                              <td >24 Jul 2021</td>
+                              <td>Reviewed</td>
+                              <td><TooltipHost
+                              content=""
+                              // This id is used on the tooltip itself, not the host
+                              // (so an element with this id only exists when the tooltip is shown)                              
+                              calloutProps={calloutProps}
+                              styles={hostStyles}
+                            >
+                              <IconButton iconProps={Comment} title=" " ariaLabel=" " />
+                            </TooltipHost></td>
+                            
+                            </tr>
+                            <tr>
+                              <td>Robert Willam </td>
+                              <td >24 Jul 2021</td>
+                              <td>Reviewed</td>
+                              <td><TooltipHost
+                              content="This was an excellent document on very thorough research."
+                              // This id is used on the tooltip itself, not the host
+                              // (so an element with this id only exists when the tooltip is shown)                              
+                              calloutProps={calloutProps}
+                              styles={hostStyles}
+                            >
+                              <IconButton iconProps={Comment} title=" " ariaLabel=" " />
+                            </TooltipHost></td>
+                            
+                            </tr>
+                            </table>
+                            </div>                            
+                            </Modal>         
+                                       
+                        
+                        
+                        
+                        
+                        
+                   
+                   </div>
+            </div>  
+    </PivotItem>                                                                                                       
+                        
+        </Pivot>
+    </div>
     );
   }
 }

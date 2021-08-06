@@ -3,7 +3,8 @@ import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
 import {
   IPropertyPaneConfiguration,
-  PropertyPaneTextField
+  PropertyPaneTextField,
+  PropertyPaneToggle
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 
@@ -32,6 +33,7 @@ export default class VoidWorkFlowWebPart extends BaseClientSideWebPart<IVoidWork
         context: this.context,
         DueDateDefault:this.properties.DueDateDefault,
         RetentionPeriod:this.properties.RetentionPeriod,
+        project:this.properties.project
       }
     );
 
@@ -65,6 +67,11 @@ export default class VoidWorkFlowWebPart extends BaseClientSideWebPart<IVoidWork
                 }),
                 PropertyPaneTextField('RetentionPeriod', {
                   label: "Retention Period"
+                }),
+                PropertyPaneToggle('project',{
+                  label:'Project',
+                  onText: 'On',
+                  offText: 'Off'
                 }),
               ]
             }

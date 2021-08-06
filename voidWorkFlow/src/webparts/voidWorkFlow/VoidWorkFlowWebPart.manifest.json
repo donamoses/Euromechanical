@@ -22,7 +22,9 @@
     "officeFabricIconFontName": "Page",
     "properties": {
       "description": "voidWorkFlow",
-      "DueDateDefault":"5"
+      "DueDateDefault":"5",
+      "RetentionPeriod":"30",
+      "project":""
     }
   }]
 }

@@ -58,6 +58,8 @@ export interface ICreateDocumentState {
     categoryKey: string;
     subCategoryKey: string;
     publishOption: string;
+    hideProject:boolean;
+    dcc: any;
 }
 export default class CreateDocument extends React.Component<ICreateDocumentProps, ICreateDocumentState, any> {
     private validator: SimpleReactValidator;
@@ -103,6 +105,8 @@ export default class CreateDocument extends React.Component<ICreateDocumentProps
             categoryKey: "",
             subCategoryKey: "",
             publishOption: "",
+            hideProject:true,
+            dcc: "",
         };
 
         this._drpdwnDocCateg = this._drpdwnDocCateg.bind(this);
@@ -116,8 +120,14 @@ export default class CreateDocument extends React.Component<ICreateDocumentProps
         this._onCreateDocChecked = this._onCreateDocChecked.bind(this);
     }
     public async componentDidMount() {
-        this.getData();
-    }
+
+       
+        console.log(this.props.project);
+        if (this.props.project) {
+          this.setState({ hideProject: false });
+        }
+      }
+
     public componentWillMount = () => {
         this.validator = new SimpleReactValidator({
             messages: {
@@ -126,71 +136,7 @@ export default class CreateDocument extends React.Component<ICreateDocumentProps
         });
 
     }
-    public getData = async () => {
-        let uweb = Web(this.props.EmployeeUrl);
-        let userdeptvalue;
-        let username;
-        username = await sp.web.currentUser.get();
-        // const EmployeeListitems: any[] = await uweb.lists.getByTitle("Employees").items.select("Department/Title").expand("Department").filter(" UserNameId eq " + username.Id).get();
-        const EmployeeListitems: any[] = await uweb.lists.getByTitle(this.props.EmployeelistName).items.select("Title", "UserName/Id", "UserName/Title", "UserName/EMail", "EmailId", "Department/Title").expand("UserName", "Department").filter(" UserName/EMail eq  '" + username.Email + "'").get();
-        console.log(EmployeeListitems);
-        console.log(EmployeeListitems[0].Department.Title);
-        userdeptvalue = EmployeeListitems[0].Department.Title;
-        this.setState({ userdept: userdeptvalue });
-        // alert(this.state.userdept);
-        const allItems: any[] = await sp.web.lists.getByTitle(this.props.DepartmentlistName).items.select("Title,ID,DepartmentName").getAll();
-        let optionsArray = [];
-
-        for (let i = 0; i < allItems.length; i++) {
-
-            let data = {
-                key: allItems[i].Id,
-                text: allItems[i].DepartmentName
-            };
-
-            optionsArray.push(data);
-        }
-        this.setState({
-            depOptions: optionsArray
-        });
-        let optionsArrays = [];
-        const allItemss: any[] = await sp.web.lists.getByTitle(this.props.DocumentlistName).items.select("DocumentCategory,ID").getAll();
-
-        for (let i = 0; i < allItemss.length; i++) {
-
-            let data = {
-                key: allItemss[i].Id,
-                text: allItemss[i].DocumentCategory
-            };
-
-            optionsArrays.push(data);
-        }
-        this.setState({
-            docCategoryOptions: optionsArrays
-        });
-        console.log(this.state.docCategoryOptions);
-        //Select Template Dropdown
-        let docarray = [];
-        let value = this.props.TemplateCategory;
-
-        const Items: any[] = await sp.web.lists.getByTitle(this.props.TemplatelistName).items.select("DocumentName").filter("substringof('" + value + "',DocumentName)").get();
-        //console.log(Items);
-        for (let i = 0; i < Items.length; i++) {
-
-            let data = {
-                key: Items[i].DocumentName,
-                text: Items[i].DocumentName
-            };
-
-            docarray.push(data);
-        }
-        this.setState({
-            docs: docarray
-        });
-        //alert(Items[0].DocumentName);
-
-
-    }
+    
     public _titleValidation = () => {
 
         let titlemsg = ((document.getElementById("t1") as HTMLInputElement).value);
@@ -378,7 +324,7 @@ export default class CreateDocument extends React.Component<ICreateDocumentProps
             categoryKey: "",
             subCategoryKey: "",
             publishOption: "",
-        })
+        });
     }
 
     public render(): React.ReactElement<ICreateDocumentProps> {
@@ -406,6 +352,7 @@ export default class CreateDocument extends React.Component<ICreateDocumentProps
             { key: '2', text: 'PDF' },
 
         ];
+       
         return (
             <div className={styles.createDocument}>
                 <div style={{ marginLeft: "auto", marginRight: "auto", width: "50rem" }}>
@@ -487,14 +434,24 @@ export default class CreateDocument extends React.Component<ICreateDocumentProps
                         // defaultSelectedUsers={[this.state.setapprover]}
                         principalTypes={[PrincipalType.User]}
                         resolveDelay={1000} />
-                    {/* <TooltipHost
-                    content="Multiple Keywords should be ',' separated"
-                    //id={tooltipId}
-                    calloutProps={calloutProps}
-                    styles={hostStyles}>
-                    <Label >Keyword: </Label>< TextField id="keyword"   ></TextField>
-                </TooltipHost> */}
-                    {/* </Tooltip> */}
+                        <div  hidden={this.state.hideProject}>
+                         <PeoplePicker
+                            context={this.props.context}
+                            titleText="DCC"
+                            personSelectionLimit={1}
+                            groupName={""} // Leave this blank in case you want to filter from all users    
+                            showtooltip={true}
+                            disabled={false}
+                            ensureUser={true}
+                            // selectedItems={this._getVerifier}
+                            defaultSelectedUsers={[this.state.dcc]}
+                            showHiddenInUI={false}
+                            // isRequired={true}
+                            principalTypes={[PrincipalType.User]}
+                            resolveDelay={1000}
+                            />
+
+                        </div>
 
 
                     <div style={{ display: "flex" }}>

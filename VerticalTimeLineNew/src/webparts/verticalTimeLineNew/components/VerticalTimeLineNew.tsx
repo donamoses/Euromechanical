@@ -31,7 +31,7 @@ const contentStyles = mergeStyleSets({
     theme.fonts.xLargePlus,
     {
       flex: '1 1 auto',
-      borderTop: `4px solid ${theme.palette.themePrimary}`,
+      //borderTop: `4px solid ${theme.palette.themePrimary}`,
       color: theme.palette.neutralPrimary,
       display: 'flex',
       alignItems: 'center',
@@ -44,7 +44,7 @@ const contentStyles = mergeStyleSets({
     theme.fonts.xLargePlus,
     {
       flex: '1 1 auto',
-      borderTop: `4px solid ${theme.palette.themePrimary}`,
+     // borderTop: `4px solid ${theme.palette.themePrimary}`,
       color: theme.palette.neutralPrimary,
       display: 'flex',
       alignItems: 'center',
@@ -364,7 +364,7 @@ public _delegateSubmit = () => {
                           <h4 style={{ color: '#61b8ff' }}>NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</h4>
                           <p style={{fontSize:'12px'}}>
                                                   <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
-                                                    Approved By :  Sunil John
+                                                    Approved  :  Sunil John
                                                   </div>
                                                   <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
                                                   Revision : 1
@@ -376,15 +376,16 @@ public _delegateSubmit = () => {
                         <TimelineItem
                   key="001"
                   dateText="23 Jul 2021"
-                  style={{ color: '#e86971' }}
+                  //style={{ color: '#e86971' }}
+                  dateInnerStyle={{ background: '#76bb7f' }}
                   lineColor={"#76bb7f"} 
                 >
                   <h3>Published</h3>
                   <h4>NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</h4>
                   <p style={{fontSize:'12px'}}>
-                                      Verified By : Subha Raveendran
+                                      Reviewer  : Subha Raveendran
                                       <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
-                                        Approved By : Sunil John
+                                        Approved  : Sunil John
                                       </div>
                                       <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
                                         Revision : 1
@@ -395,15 +396,15 @@ public _delegateSubmit = () => {
                 <TimelineItem
                   key="001"
                   dateText="23 Jul 2021"
-                  style={{ color: '#e86971' }}
+                 // style={{ color: '#e86971' }}
+                  dateInnerStyle={{ background: '#76bb7f' }}
                   lineColor={"#76bb7f"} 
                 >
                           <h3>Reviewed</h3>
                           <h4>NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</h4>
                           <p style={{fontSize:'12px'}}>
                                                   Requestor: Subha Raveendran
-                                                  <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
-                                                    Verified By : Subha Raveendran
+                                                  <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>                                                  
                                                   </div>
                                                   <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
                                                     Revision : 0
@@ -422,7 +423,7 @@ public _delegateSubmit = () => {
                           <p style={{fontSize:'12px'}}>
                                                   <div> Requestor : Subha Raveendran</div>
                                                   <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
-                                                    <div>Verifier : Subha Raveendran</div>  
+                                                     
                                                     <div style={{ margin: "0px 0px 0px 22px" }}>
                                                         Approver : Sunil John</div>
                                                     </div>
@@ -462,7 +463,7 @@ public _delegateSubmit = () => {
       >
 
         <div className={contentStyles.header}>
-          <span style={{textAlign:"center",fontSize:"17px"}}>WorkFlow Status</span>
+          <span style={{textAlign:"center",fontSize:"17px"}}></span>
           <IconButton
             iconProps={cancelIcon}
             ariaLabel="Close popup modal"
@@ -471,7 +472,7 @@ public _delegateSubmit = () => {
           />
           </div>
           <div style={{padding: "0 25px 0px 29px"}}>
-           <table >
+           <table  className={styles.tableModal}>
                             <tr>
                               <th>Reviewer</th>
                               <th>DueDate</th> 
@@ -481,7 +482,7 @@ public _delegateSubmit = () => {
                               <th>Cancel</th>
                               <th>Delegate</th>
                             </tr>
-                            <tr>
+                            <tr  style={{border:"1px"}}>
                               <td>Jill</td>
                               <td style={{color: "red"}}>24 Jul 2021</td>
                               <td>Under Review</td>

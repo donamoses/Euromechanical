@@ -2,7 +2,7 @@ import * as React from 'react';
 import styles from './DocumentReview.module.scss';
 import { IDocumentReviewProps } from './IDocumentReviewProps';
 import { escape } from '@microsoft/sp-lodash-subset';
-import { Checkbox, DatePicker, DefaultButton, DialogFooter, Dropdown, FontWeights, getTheme, IconButton, IDropdownOption, IIconProps, Label, mergeStyleSets, MessageBar, MessageBarType, TextField } from 'office-ui-fabric-react';
+import { Checkbox, DatePicker, DefaultButton, DialogFooter, Dropdown, FontWeights, getTheme, IconButton, IDropdownOption, IIconProps, Label, Link, mergeStyleSets, MessageBar, MessageBarType, TextField } from 'office-ui-fabric-react';
 import ReactHtmlParser, { processNodes, convertNodeToElement, htmlparser2 } from 'react-html-parser';
 // import Moment from 'react-moment';
 import SimpleReactValidator from 'simple-react-validator';
@@ -47,6 +47,7 @@ export default class DocumentReview extends React.Component<IDocumentReviewProps
     };
     this._docReview=this._docReview.bind(this);
     this._drpdwnStatus=this._drpdwnStatus.bind(this);
+    this._openRevisionHistory=this._openRevisionHistory.bind(this);
   }
   public async componentDidMount() {
       console.log(this.props.project);
@@ -86,6 +87,9 @@ public _drpdwnStatus(option: { key: any; text: any }) {
 private _commentChange = (ev: React.FormEvent<HTMLInputElement>, Comment?: string) => {
   this.setState({ comments: Comment || '' });
 }
+private _openRevisionHistory=()=>{
+  window.open("https://ccsdev01.sharepoint.com/sites/TrialTest/SitePages/RevisionHistory.aspx");
+}
   public render(): React.ReactElement<IDocumentReviewProps> {
     const Status: IDropdownOption[] = [
 
@@ -98,6 +102,19 @@ private _commentChange = (ev: React.FormEvent<HTMLInputElement>, Comment?: strin
          <div style={{ marginLeft: "auto",marginRight:"auto",width:"50rem" }}>
           <div className={styles.alignCenter}> Review form</div>
           {/* <h1 className={styles.title} >Review form </h1> */}
+          <br></br>
+         <div></div>
+           <div style={{display:"flex"}}>
+             <div>Document ID : NOT/SHML/INT-PRC/AM-00009</div>
+             <div style={{padding:"0 0 0 366px"}}>
+             <Link onClick={this._openRevisionHistory} underline>
+             Revision History
+            </Link> 
+               </div>
+           </div>
+           <br></br>
+         
+        
           
         
         <div style={{marginTop:"17px"}}>
