@@ -154,9 +154,7 @@ const CategoryOptions:IDropdownOption[]=[
            <div style={{display:"flex"}}>
              <div>Document ID : NOT/SHML/INT-PRC/AM-00009</div>
              <div style={{padding:"0 0 0 366px"}}>
-             <Link onClick={this._openRevisionHistory} underline>
-             Revision History
-            </Link>
+            
                </div>
            </div>
            <br></br>
@@ -169,13 +167,14 @@ const CategoryOptions:IDropdownOption[]=[
             <tr>
               <td><Label >Orginator : SUNIL JOHN </Label></td>
               <td><Label >Requester : SUBHA RAVEENDRAN</Label></td>
-              <td><Label >Revision : 0 </Label></td>
+              <td ><Label >Revision : 0 </Label></td>
+              <td > <Link onClick={this._openRevisionHistory} underline>Revision History </Link>  </td>
             </tr>
-            <tr>
+            {/* <tr>
               <td><Label >Business Unit : BU1 </Label></td>
               <td><Label >Category : CAT1 </Label></td>
               <td><Label >Sub-Category : SubCat1 </Label></td>
-            </tr>
+            </tr> */}
           </table>
           <table>
             <tr hidden={this.state.hideproject}>
@@ -229,7 +228,12 @@ const CategoryOptions:IDropdownOption[]=[
                   resolveDelay={1000}
                 />
               </td>
-              <td>
+              
+            </tr>
+          </table>
+          <table>
+            <tr>
+            <td>
               <PeoplePicker
                 context={this.props.context}
                 titleText="Approver"
@@ -248,13 +252,8 @@ const CategoryOptions:IDropdownOption[]=[
               />
                   <div style={{ color: "#dc3545" }}>{this.validator.message("Approver", this.state.approver, "required")}{" "}</div>
               </td>
-            </tr>
-          </table>
-          <table>
-            <tr>
-              
               <td>
-                <DatePicker label="Expiry Date:" id="DueDate" style={{ width: '300px' }}
+                <DatePicker label="Due Date:" id="DueDate" 
                   onSelectDate={this._onExpDatePickerChange}
                   placeholder="Select a date..."
                   isRequired={true}
@@ -265,6 +264,7 @@ const CategoryOptions:IDropdownOption[]=[
                 />
                 <div style={{ color: "#dc3545" }}>{this.validator.message("ExpiryDate", this.state.expiryDate, "required")}{" "}</div>
               </td>
+              
             </tr>
           </table>
           <table>

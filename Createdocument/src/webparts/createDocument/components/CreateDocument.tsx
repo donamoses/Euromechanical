@@ -355,7 +355,7 @@ export default class CreateDocument extends React.Component<ICreateDocumentProps
        
         return (
             <div className={styles.createDocument}>
-                <div style={{ marginLeft: "auto", marginRight: "auto", width: "50rem" }}>
+                <div style={{ marginLeft: "auto", marginRight: "auto", width: "35rem" }}>
                     <div className={styles.alignCenter}> Create Document</div>
                     <div style={{ display: this.state.DocumentAdded }}>
                         <MessageBar messageBarType={MessageBarType.success} isMultiline={false}>  Document Saved Successfully.</MessageBar>
@@ -531,7 +531,7 @@ export default class CreateDocument extends React.Component<ICreateDocumentProps
                             //id={tooltipId}
                             calloutProps={calloutProps}
                             styles={hostStyles}>
-                            <Checkbox label="Critical Document ? " boxSide="end" />
+                            <Checkbox label="Critical Document ? " boxSide="end" style={{color:"red" }} />
                         </TooltipHost>
                     </div>
 

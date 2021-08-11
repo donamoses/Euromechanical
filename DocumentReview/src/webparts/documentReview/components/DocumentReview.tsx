@@ -112,12 +112,11 @@ private _openRevisionHistory=()=>{
             </Link> 
                </div>
            </div>
-           <br></br>
-         
+           <br></br>      
         
           
         
-        <div style={{marginTop:"17px"}}>
+        <div style={{marginTop:"2px"}}>
          
           <Label >Document :  <a href={this.state.LinkToDoc}>NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</a></Label>
           
@@ -134,7 +133,7 @@ private _openRevisionHistory=()=>{
               <td><Label>Requestor : SUBHA RAVEENDRAN </Label></td>
               <td><Label >Requested Date : 21 JUL 2021 </Label></td></tr> </table>
               <table> <tr><td><Label> Requestor Comment:</Label>Requested to review the document </td></tr></table>
-              <table>
+              <table  style={{ marginTop: '16px' }}>
             <tr  hidden={this.state.hideproject}>
               <td><Label>DCC : SUBHA RAVEENDRAN </Label></td>
               <td><Label >DCC Date : 21 JUL 2021 </Label></td></tr> </table>

@@ -120,14 +120,15 @@ export default class DocumentApproval extends React.Component<IDocumentApprovalP
               <tr>
               <td><Label> Requestor Comment:</Label>Requested to review the document </td>
             </tr></table>
-            <table>
+            <table style={{marginTop:"1%"}} >
+              
             <tr hidden={this.state.hideproject} >
               <td><Label>DCC : SUBHA RAVEENDRAN </Label></td>
               <td><Label >DCC Date : 21 JUL 2021 </Label></td></tr></table><table><tr hidden={this.state.hideproject}>
               <td><Label> DCC Comment:</Label>Requested to dcc level review the document</td>
             </tr></table>
             <div >
-            <table className={styles.tableClass} style={{marginTop:"13px"}}>
+            <table className={styles.tableClass}  style={{marginTop:"12px"}} >
               <th>Reviewer
               </th>
               <th>Review Date
