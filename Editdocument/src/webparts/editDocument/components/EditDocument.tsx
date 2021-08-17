@@ -179,6 +179,7 @@ export default class EditDocument extends React.Component<IEditDocumentProps,IEd
     this._reviewedHistory=this._reviewedHistory.bind(this);
     this._delegateClick=this._delegateClick.bind(this);
     this._delegateSubmit=this._delegateSubmit.bind(this);
+    this._onCancel=this._onCancel.bind(this);
 
 }
   public async componentDidMount() {
@@ -258,7 +259,7 @@ private _onDirectPublishChecked = (ev: React.FormEvent<HTMLInputElement>, isChec
   else if (!isChecked) { this.setState({ hideaAppDatePic: "none", directPublihCheck: false }); }
 }
 private _onCreateDocument = () => {
-  if (this.validator.fieldValid("Name") && this.validator.fieldValid("category") && this.validator.fieldValid("subCategory") && this.validator.fieldValid("businessUnit") && (this.state.directPublihCheck == false)) {
+  if (this.validator.fieldValid("Name") && (this.state.directPublihCheck == false)) {
 
       this.validator.hideMessages();
       this.setState({ DocumentAdded: "" });
@@ -267,7 +268,7 @@ private _onCreateDocument = () => {
 
       // this._onCancel();
   }
-  else if (this.validator.fieldValid("Name") && this.validator.fieldValid("category") && this.validator.fieldValid("subCategory") && this.validator.fieldValid("businessUnit") && (this.state.directPublihCheck == true) && this.validator.fieldValid("publishFormat")) {
+  else if (this.validator.fieldValid("Name")  && this.validator.fieldValid("publishFormat")) {
       this.validator.hideMessages();
       this.setState({ DocumentAdded: "" });
       setTimeout(() => this.setState({ DocumentAdded: 'none' }), 1000);
@@ -280,25 +281,22 @@ private _onCreateDocument = () => {
 }
 private _onCancel = () => {
   // window.location.href = this.props.RedirectUrl;
+  window.location.replace("https://ccsdev01.sharepoint.com/sites/DMS/SitePages/Detail-List.aspx");
   this.setState({
-      hideExpLeadPeriod: "none",
-      title: "Organization Details",
-      DocumentAdded: 'none',
-      hideDirectPublish: 'none',
-      approvalDate: "",
-      hideaAppDatePic: "none",
-      ExpiryLeadPeriod: "",
-      directPublihCheck: false,
-      businessUnit: "",
-      category: "",
-      subCategory: "",
-      bUkey: "",
-      publishOptionKey: "",
-      categoryKey: "",
-      subCategoryKey: "",
-      publishOption: "",
-      expiredate:"",
-  });}
+    hideExpLeadPeriod: "none",
+    title: "Organization Details",
+    DocumentAdded: 'none',
+    hideDirectPublish: 'none',
+    approvalDate: "",
+    hideaAppDatePic: "none",
+    ExpiryLeadPeriod: "",
+    directPublihCheck: false,
+    businessUnit: "",     
+    publishOption: "",
+    expiredate:"",
+});
+
+}
 
 
 //for veritacl time line
@@ -377,7 +375,7 @@ this.setState({
           
          <Pivot aria-label="Links of Tab Style Pivot Example" linkFormat="tabs">
               <PivotItem headerText="Document Info" >
-                <div style={{ marginLeft: "7%",marginRight:"auto",width:"30rem" }}>
+                <div style={{ marginLeft: "7%",marginRight:"auto",width:"28rem" }}>
                   {/* <div style={{fontSize:"18px",fontWeight:"bold",textAlign:"center"}}> Edit Document</div> */}
                   < TextField required id="t1"
                         label="Name"                       
@@ -386,14 +384,30 @@ this.setState({
                         value={"Migration Policy"}>                          
                   </TextField>
                     <div style={{ color: "#dc3545" }}>{this.validator.message("Name", this.state.title, "required|alpha_num_space")}{" "}</div>
-                  <Dropdown id="t3" label="Business Unit"                        
+                    < TextField 
+                        label="Business Unit"                  
+                        value={"BU1"} readOnly>  
+                                              
+                  </TextField>
+                  < TextField 
+                        label="Category"                  
+                        value={"Cat1"} readOnly>  
+                                              
+                  </TextField>
+                  < TextField  
+                        label="Sub Category"                  
+                        value={"SubCat1"} readOnly>  
+                                              
+                  </TextField>
+                  {/* <Dropdown id="t3" label="Business Unit"                        
                         selectedKey={this.state.bUkey}
                         placeholder="BU1"
                         options={BusinessUnit}    
                         disabled           
                   />
                     <div style={{ color: "#dc3545" }}>{this.validator.message("businessUnit", this.state.businessUnit, "required")}{" "}</div>
-                  <Dropdown id="t2"  label="Category"
+                   
+                    <Dropdown id="t2"  label="Category"
                         placeholder="Cat1"
                         selectedKey={this.state.categoryKey}  options={Category} disabled/>
                   <div style={{ color: "#dc3545" }}>{this.validator.message("category", this.state.category, "required")}{" "}</div>
@@ -401,8 +415,13 @@ this.setState({
                         placeholder="SubCat1"
                         selectedKey={this.state.subCategoryKey}
                         options={SubCategory} disabled/>
-                  <div style={{ color: "#dc3545" }}>{this.validator.message("subCategory", this.state.subCategory, "required")}{" "}</div>                    
-                    <PeoplePicker
+                  <div style={{ color: "#dc3545" }}>{this.validator.message("subCategory", this.state.subCategory, "required")}{" "}</div>                     */}
+                    < TextField  
+                        label="Originator"                  
+                        value={"Sunil John"} readOnly>  
+                                              
+                  </TextField>
+                    {/* <PeoplePicker
                       context={this.props.context}
                       titleText="Originator"                     
                       personSelectionLimit={1}                      
@@ -415,7 +434,7 @@ this.setState({
                       // onChange={this._getDocResponsible}
                       showHiddenInUI={false}
                       principalTypes={[PrincipalType.User]}
-                      resolveDelay={1000} />                                     
+                      resolveDelay={1000} />                                      */}
 
                     <PeoplePicker
                       context={this.props.context}
@@ -545,16 +564,18 @@ this.setState({
                     </div>
 
                     <DialogFooter>
-                        <table style={{ float: "right" }}>
+                        <table style={{ float: "right" ,marginTop:"-10px"}}>
                             <tr>
                                 <div>
                                     <td style={{ display: "flex" ,padding: "0 0 0 14px"}}>
                                         <Label style={{ color: "red", fontSize: "23px" }}>*</Label>
                                         <label style={{ fontStyle: "italic", fontSize: "12px" }}>fields are mandatory </label>
-                                    </td>
-                                    <DefaultButton style={{ float: "right", borderRadius: "10px", border: "1px solid gray" }} text="Cancel" onClick={this._onCancel}></DefaultButton >
-                                    <DefaultButton style={{ float: "right", marginRight: "10px", borderRadius: "10px", border: "1px solid gray" }} text="Submit" onClick={this._onCreateDocument} />
-
+                                    </td>                                    
+                                    <PrimaryButton text="Submit" onClick={this._onCreateDocument} />
+                                    <DefaultButton style={{marginLeft:"7px"}} text="Cancel" onClick={this._onCancel} />
+                                    <PrimaryButton  style={{ float: "right", marginRight: "-44px", borderRadius: "10px", border: "1px solid gray",visibility:"hidden" }} text="Submit"   onClick={this._onCreateDocument} />
+                                   {/* <DefaultButton style={{ float: "right", marginRight: "10px", borderRadius: "10px", border: "1px solid gray" }} text="Cancel" onClick={this._onCancel} /> */}
+                                   
                                 </div>
                             </tr>
 
@@ -566,9 +587,9 @@ this.setState({
                         </PivotItem>
                        
                <PivotItem headerText="Version History">
-                          {/* {this._versionHistory()}                        */}                      
+                          {/* {this._versionHistory()}                        */}                     
                         
-
+                         
                         <div>                          
                         <iframe src={this.state.siteurl + "/_layouts/15/Versions.aspx?list=%7Bda53146b-3f5c-4321-926e-c3c2adbff323%7D&ID=1&IsDlg=0"} style={{overflow: "hidden",width:"100%",border:"white"}}></iframe>
                         </div>

@@ -29,7 +29,7 @@ export default class DetailList extends React.Component<IDetailListProps, IDetai
     this._columns = [
       { key: 'Edit', name: 'Edit', fieldName: 'Title', minWidth:25,maxWidth:25, isResizable: true },
       //{ key: 'DocumentName', name: 'Document Name', fieldName: 'DocumentName', minWidth: 100, maxWidth: 200, isResizable: true },  
-      { key: 'LinkToDocument', name: 'Link To Document', fieldName: 'LinkToDocument', minWidth: 250, maxWidth: 300, isResizable: true },
+      { key: 'LinkToDocument', name: 'Document Name', fieldName: 'LinkToDocument', minWidth: 250, maxWidth: 300, isResizable: true },
       { key: 'WFStatus', name: 'Status', fieldName: 'WFStatus', minWidth: 20, maxWidth: 50, isResizable: true },
       // { key: 'Approver', name: 'Approver', fieldName: 'ApproverId', minWidth: 100, maxWidth: 200, isResizable: true },
       { key: 'SendRequest', name: '', minWidth:23,maxWidth:23, isResizable: true },
@@ -125,11 +125,12 @@ export default class DetailList extends React.Component<IDetailListProps, IDetai
 
    private _editDocument = (item)=>{
       //console.log(item.LinkToDocument.Description);
-    window.open("https://ccsdev01.sharepoint.com/sites/TrialTest/SitePages/EditDocument.aspx");
+    //window.open("https://ccsdev01.sharepoint.com/sites/TrialTest/SitePages/EditDocument.aspx");
+    window.location.replace("https://ccsdev01.sharepoint.com/sites/TrialTest/SitePages/EditDocument.aspx");
   }
   private _sendRequest = (item)=>{
       
-    window.open("https://ccsdev01.sharepoint.com/sites/TrialTest/SitePages/SendRequest.aspx");
+    window.location.replace("https://ccsdev01.sharepoint.com/sites/TrialTest/SitePages/SendRequest.aspx");
   }
   private _revisionHistory = (item)=>{
     console.log(item);

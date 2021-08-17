@@ -74,11 +74,14 @@ export default class SendRequest extends React.Component<ISendRequestProps, ISen
   }
   private _onCancel = () => {
     // window.location.href = this.props.RedirectUrl;
+    window.location.replace("https://ccsdev01.sharepoint.com/sites/DMS/SitePages/Detail-List.aspx");
     this.setState({
       comments:"",
       approver:"",
       expiryDate:"",
-    });}
+    });
+  
+  }
     private _submitSendRequest = () => {
       if (this.validator.fieldValid("Approver") && this.validator.fieldValid("ExpiryDate") ) {
 
