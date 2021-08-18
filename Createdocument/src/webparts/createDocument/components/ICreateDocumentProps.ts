@@ -11,4 +11,5 @@ export interface ICreateDocumentProps {
   TemplatelistName:string;
   TemplateCategory:string;
   ListName:string;
+  project:string;
 }

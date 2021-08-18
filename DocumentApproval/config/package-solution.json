@@ -3,9 +3,10 @@
   "solution": {
     "name": "document-approval-client-side-solution",
     "id": "6ac5bd41-f089-4e5e-a48a-7b1ea3fc6683",
-    "version": "1.0.0.0",
+    "version": "2.0.0.0",
     "includeClientSideAssets": true,
     "isDomainIsolated": false,
+    "skipFeatureDeployment": true,
     "developer": {
       "name": "",
       "websiteUrl": "",

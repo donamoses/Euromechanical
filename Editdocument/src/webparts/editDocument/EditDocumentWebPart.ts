@@ -18,7 +18,7 @@ export interface IEditDocumentWebPartProps {
   project:string;
 }
 
-export default class EditDocumentWebPart extends BaseClientSideWebPart<IEditDocumentWebPartProps> {
+export default class EditDocumentWebPart extends BaseClientSideWebPart<IEditDocumentProps> {
   public onInit(): Promise<void> {
     return super.onInit().then(_ => {
       sp.setup({
@@ -33,7 +33,8 @@ export default class EditDocumentWebPart extends BaseClientSideWebPart<IEditDocu
         context: this.context,
         description: this.properties.description,
         createdocument:this.properties.createdocument,
-        project:this.properties.project
+        project:this.properties.project,
+        RedirectUrl:this.properties.RedirectUrl,
       }
     );
 
