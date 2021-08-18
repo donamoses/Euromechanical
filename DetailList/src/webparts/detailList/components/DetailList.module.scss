@@ -71,4 +71,16 @@
       display: inline-block;
     }
   }
+  .ms-SearchBox{
+    //border-radius: 35px;
+    width: 88%;
+    height: 35px;
+    margin: 10px auto;
+  //  &:after{
+  //   //border-radius:35px;
+  // }
+  input{
+    padding: 0 5px;
+  }
+ }
 }

@@ -14,8 +14,8 @@ import { sp } from '@pnp/sp';
 
 export interface IDetailListWebPartProps {
   description: string;
-  siteurl:string;
-  listName:string;
+  siteurl: string;
+  listName: string;
 }
 
 export default class DetailListWebPart extends BaseClientSideWebPart<IDetailListWebPartProps> {
@@ -31,7 +31,7 @@ export default class DetailListWebPart extends BaseClientSideWebPart<IDetailList
       DetailList,
       {
         description: this.properties.description,
-        siteurl: this.properties.siteurl,
+        siteUrl: this.context.pageContext.web.serverRelativeUrl,
         listName: this.properties.listName,
       }
     );
@@ -60,10 +60,7 @@ export default class DetailListWebPart extends BaseClientSideWebPart<IDetailList
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
-                }),
-                PropertyPaneTextField('siteurl', {
-                  label: "Siteurl"
-                }),
+                }),                
                 PropertyPaneTextField('listName', {
                   label: "List Name"
                 }),

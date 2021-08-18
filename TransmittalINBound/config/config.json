@@ -1,0 +1,19 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "transmitta-l-in-bound-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/transmittaLInBound/TransmittaLInBoundWebPart.js",
+          "manifest": "./src/webparts/transmittaLInBound/TransmittaLInBoundWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "TransmittaLInBoundWebPartStrings": "lib/webparts/transmittaLInBound/loc/{locale}.js",
+    "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js"
+  }
+}

@@ -17,7 +17,8 @@
     "@pnp/sp": "^2.7.0",
     "office-ui-fabric-react": "7.156.0",
     "react": "16.9.0",
-    "react-dom": "16.9.0"
+    "react-dom": "16.9.0",
+    "simple-react-validator": "^1.6.1"
   },
   "devDependencies": {
     "@types/react": "16.9.36",

@@ -3,7 +3,8 @@ import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
 import {
   IPropertyPaneConfiguration,
-  PropertyPaneTextField
+  PropertyPaneTextField,
+  PropertyPaneToggle
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 
@@ -24,7 +25,7 @@ export interface ICreateDocumentWebPartProps {
   ListName:string;
 }
 
-export default class CreateDocumentWebPart extends BaseClientSideWebPart<ICreateDocumentWebPartProps> {
+export default class CreateDocumentWebPart extends BaseClientSideWebPart<ICreateDocumentProps> {
   public onInit(): Promise<void> {
     return super.onInit().then(_ => {
       sp.setup({
@@ -46,7 +47,8 @@ export default class CreateDocumentWebPart extends BaseClientSideWebPart<ICreate
         DocumentlistName:this.properties.DocumentlistName,
         TemplatelistName:this.properties.TemplatelistName,
         TemplateCategory:this.properties.TemplateCategory,
-        ListName:this.properties.ListName
+        ListName:this.properties.ListName,
+        project:this.properties.project,
       }
     );
 
@@ -98,7 +100,12 @@ export default class CreateDocumentWebPart extends BaseClientSideWebPart<ICreate
                 }),
                 PropertyPaneTextField('ListName', {
                   label:"ListName"
-                })
+                }),
+                PropertyPaneToggle('project',{
+                  label:'Project',
+                  onText: 'On',
+                  offText: 'Off'
+                }),
               ]
             }
           ]

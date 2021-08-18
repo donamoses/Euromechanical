@@ -1,5 +1,5 @@
 export interface IDetailListProps {
   description: string;
-  siteurl:string;
+  siteUrl:string;
   listName:string;
 }
