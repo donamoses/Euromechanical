@@ -55,6 +55,7 @@ export default class InboundSubContractor extends React.Component<IInboundSubCon
     ];
     return (
       <div className={ styles.inboundSubContractor }>
+         <div style={{ marginLeft: "auto",marginRight:"auto",width:"50rem" }}>
          <div style={{fontWeight:"bold",fontSize:"15px",textAlign:"center"}}> Inbound Transmittal from Euromechanical</div>
         <div className={styles.row}>
         
@@ -67,12 +68,13 @@ export default class InboundSubContractor extends React.Component<IInboundSubCon
         <Label style={{padding: "0 0 0 185px"}}>Project : PM-45875-ADNOC Engineering Project</Label>
         </div> 
         <div style={{display:"flex",margin:"7px"}}>
-        <Label style={{marginRight:"48px"}}>Sub-Contractor : </Label>
+        <Label style={{marginRight:"40px"}}>Sub-Contractor : </Label>
         <SearchBox placeholder="Search"
          title="Sub-Contractor" 
          onSearch={newValue => console.log('value is ' + newValue)}  
          className={styles['ms-SearchBox']}/>  
         </div>
+        <hr  style={{marginTop:"20px"}}/>
         <div style={{display:"flex",margin:"7px"}}> 
           <Dropdown 
           style={{ width: '300px',marginRight:'76px' }}
@@ -125,6 +127,7 @@ export default class InboundSubContractor extends React.Component<IInboundSubCon
                 <IconButton iconProps={DeleteIcon} title="Delete" ariaLabel="Delete" /></td>
             </tr>
           </table>
+          <hr  style={{marginTop:"20px"}}/>
           <Label>Additional Documents</Label>
           <div style={{display:"flex",margin:"7px"}}> 
           <Label >Upload Document:</Label> <input  type="file" id="myfile"  style={{marginLeft:"-105px",padding:"33px 0px 0px 0px"}}></input>
@@ -176,6 +179,7 @@ export default class InboundSubContractor extends React.Component<IInboundSubCon
                  
                  </div>
           </div>
+        </div>
       </div>
     );
   }
