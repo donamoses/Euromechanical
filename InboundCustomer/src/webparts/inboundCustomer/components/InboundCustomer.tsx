@@ -64,6 +64,7 @@ export default class InboundCustomer extends React.Component<IInboundCustomerPro
     ];
     return (
       <div className={ styles.inboundCustomer }>
+        <div style={{ marginLeft: "auto",marginRight:"auto",width:"50rem" }}>
         <div style={{fontWeight:"bold",fontSize:"15px",textAlign:"center"}}> Inbound Transmittal from Euromechanical</div>
         <div className={styles.row}>
         
@@ -75,6 +76,7 @@ export default class InboundCustomer extends React.Component<IInboundCustomerPro
         <Label>Transmittal Date : 16 Aug 2021</Label>
         <Label style={{padding: "0 0 0 185px"}}>Project : PM-45875-ADNOC Engineering Project</Label>
         </div> 
+        <hr  style={{marginTop:"20px"}}/>
         <div style={{display:"flex",margin:"7px"}}> 
           <Dropdown 
           style={{ width: '300px',marginRight:'76px' }}
@@ -127,6 +129,7 @@ export default class InboundCustomer extends React.Component<IInboundCustomerPro
                 <IconButton iconProps={DeleteIcon} title="Delete" ariaLabel="Delete" /></td>
             </tr>
           </table>
+          <hr  style={{marginTop:"20px"}}/>
           <Label>Additional Documents</Label>
           <div style={{display:"flex",margin:"7px"}}> 
           <Label >Upload Document:</Label> <input  type="file" id="myfile"  style={{marginLeft:"-105px",padding:"33px 0px 0px 0px"}}></input>
@@ -177,6 +180,7 @@ export default class InboundCustomer extends React.Component<IInboundCustomerPro
                  
                  
                  </div>
+          </div>
           </div>
       </div>
     );
