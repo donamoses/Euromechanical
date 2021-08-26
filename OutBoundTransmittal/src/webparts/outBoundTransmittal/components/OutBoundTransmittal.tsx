@@ -21,6 +21,7 @@ export interface IOutBoundTransmittalState{
   showExternalGrid:boolean;
   transmitForKey:string;
   transmitFor:string;
+  hideUnlockButton:string;
   
 }
 const dropdownStyles: Partial<IDropdownStyles> = { dropdown: { width: 200 } };
@@ -85,6 +86,7 @@ export default class OutBoundTransmittal extends React.Component<IOutBoundTransm
       showExternalGrid:true,
       transmitForKey:"",
        transmitFor:"",
+       hideUnlockButton:"none",
     };
     this._drpdwnTransmitTo=this._drpdwnTransmitTo.bind(this);
     this._drpdwnTransmitFor=this._drpdwnTransmitFor.bind(this);
@@ -93,8 +95,11 @@ export default class OutBoundTransmittal extends React.Component<IOutBoundTransm
     this._showGrid=this._showGrid.bind(this);
     this._showExternalGrid=this._showExternalGrid.bind(this);
     this._hideGrid=this._hideGrid.bind(this);
+    this._confirmAndSendBtnClick=this._confirmAndSendBtnClick.bind(this);
   }
-  
+  public async componentDidMount() {
+   
+  }
   public _drpdwnTransmitTo(option: { key: any; text: any }) {
     //console.log(option.key);
     this.setState({ transmitToKey: option.key, transmitTo: option.text });
@@ -116,16 +121,18 @@ public _drpdwnTransmitFor(option: { key: any; text: any }) {
   this.setState({ transmitForKey: option.key, transmitFor: option.text });  
 }
 private onContactClick (event) {
- alert("hiii");
- const target = event.target;
- var value = target.value;
- console.log(target);
-console.log(value);
- if(target.checked){
-     this.state.customerContChBx[value] = value;   
- }else{
-     this.state.customerContChBx.splice(value, 1);
- }
+//  alert("hiii");
+  const target = event.target;
+//  var value = target.value;
+  console.log(target['aria-label']);
+// console.log(value);
+//  if(target.checked){
+//      this.state.customerContChBx[value] = value;   
+//  }else{
+//      this.state.customerContChBx.splice(value, 1);
+//  }
+
+
 }
 private _onChoiceChange(ev: React.FormEvent<HTMLInputElement>, option: IChoiceGroupOption): void {
   console.dir(option);
@@ -163,6 +170,14 @@ private _hideGrid(){
   });
  
 }
+private _confirmAndSendBtnClick(){
+  this.setState({
+    hideUnlockButton:"",
+  });
+ 
+}
+
+
 private onCommentChange = (ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newText: string): void => {
   const newMultiline = newText.length > 50;
   if (newMultiline !== this.state.toggleMultiline) {
@@ -185,11 +200,12 @@ private onCommentChange = (ev: React.FormEvent<HTMLInputElement | HTMLTextAreaEl
     return (
       <div className={ styles.outBoundTransmittal }>
         {/* <div className={ styles.container }> */}
+        <div style={{ marginLeft: "auto", marginRight: "auto", width: "50rem" }}>
           <Label className={styles.align}>{this.props.description}</Label>
           <div style={{marginLeft:"522px"}}>
             <Label>Purchase Order : PO -34523491-00001</Label>
           </div>
-              <div style={{display:"flex",margin:"7px"}}>
+              <div style={{display:"flex",margin:"6px"}}>
               <Label >Transmittal No :  TRM-CBO-34523491-00001	</Label>
               <Label style={{padding: "0 0 0 194px"}}>Project :   34523491- ADNOC Engeering projects</Label>
               </div>
@@ -219,7 +235,7 @@ private onCommentChange = (ev: React.FormEvent<HTMLInputElement | HTMLTextAreaEl
                     <div style={{display:"flex"}}>
                         {/* <Label > To : </Label> */}
                         <span className={styles.span}></span>
-                        <TextField label="To :" style={{marginLeft:"34px",width:"290px"}} id="To" multiline autoAdjustHeight  styles={multiline}/>
+                        <TextField label="To :" style={{marginLeft:"34px",width:"290px"}} id="To" multiline autoAdjustHeight  styles={multiline}></TextField>
                         <TooltipHost
                               content="Search Contacts"                                                            
                               calloutProps={calloutProps}
@@ -236,13 +252,13 @@ private onCommentChange = (ev: React.FormEvent<HTMLInputElement | HTMLTextAreaEl
                         >
                         {customerContacts.map((contacts,key)=>{
                         return(
-                              <div style={{padding: "0px 0px 7px 0"}}><Checkbox label={contacts.text} value={contacts.key} onChange={this.onContactClick}/></div>
+                              <div style={{padding: "0px 0px 7px 0"}}><Checkbox label={contacts.text} value={this.state.customerContChBx} onChange={this.onContactClick}/></div>
                              
                             );
                         })
 
                         }
-                           <div><PrimaryButton text="Add"></PrimaryButton></div>
+                           <div><PrimaryButton text="Add" ></PrimaryButton></div>
                         </Dialog>                       
                         {/* <Label style={{marginLeft:"9px"}}> CC : </Label> */}
                         <span className={styles.span}></span>
@@ -256,7 +272,7 @@ private onCommentChange = (ev: React.FormEvent<HTMLInputElement | HTMLTextAreaEl
                         </TooltipHost> 
                       
                     </div>
-                    <div style={{display:"flex",padding:"0 0 0 12px"}}>                                         
+                    <div style={{display:"flex",padding:"0 0 12px 12px"}}>                                         
                       <TextField label="Notes"  multiline placeholder="" style={{marginLeft:"13px",width:"290px"}}/>
                       <div    style={{marginLeft:"91px",marginTop:"31px"}}>
                       <Checkbox label="Send as shared folder" style={{padding: "0 0 6px 0"}} />
@@ -264,8 +280,8 @@ private onCommentChange = (ev: React.FormEvent<HTMLInputElement | HTMLTextAreaEl
                       <Checkbox label="Send as multiple emails" style={{padding: "0 0 6px 0"}} />
                       </div>
                     </div>
-                    <hr className={styles.new4}/>
-                          <div style={{padding:"0 0 0 12px"}}>
+                    <hr/>
+                          <div style={{padding:"12px 0 12px 12px"}}>
                             <Label>Project Documents</Label>
                             <SearchBox placeholder="Document Search" title="Project Documents"  onSearch={newValue => console.log('value is ' + newValue)}  className={styles['ms-SearchBox']}/> 
                             </div>  
@@ -312,10 +328,10 @@ private onCommentChange = (ev: React.FormEvent<HTMLInputElement | HTMLTextAreaEl
                                   <td style={{ border: '1px solid #ddd', padding: '8px', borderCollapse: 'collapse' }}><IconButton iconProps={DeleteIcon} title="Delete" ariaLabel="Delete" /></td>
                                 </tr>
                           </table>
-                          <hr className={styles.new4}/>
-                    <Label >External Documents:</Label>                   
+                          <hr  style={{marginTop:"20px"}}/>
+                    <Label style={{padding:"12px 0 10px 12px"}}>External Documents:</Label>                   
                     <div style={{display:"flex"}}>
-                    <input  type="file" id="myfile" style={{marginRight:"-13px"}} ></input>
+                    <input  type="file" id="myfile" style={{marginRight:"-13px",marginLeft:"12px"}} ></input>
                     <IconButton iconProps={AddIcon} title="Add External Documents" ariaLabel="Add" onClick={this._showExternalGrid} style={{marginTop:"-4px"}}/>
                     </div>
                     <div>
@@ -341,8 +357,8 @@ private onCommentChange = (ev: React.FormEvent<HTMLInputElement | HTMLTextAreaEl
                    
                       <PrimaryButton text="Save as draft" style={{marginLeft:"auto"}}/>
                       <PrimaryButton text="Preview" style={{marginLeft:"auto"}}/>
-                      <PrimaryButton text="Confirm & Send" style={{marginLeft:"auto"}}/>
-                      <PrimaryButton text="Unlock" style={{marginLeft:"auto"}}/>
+                      <PrimaryButton text="Confirm & Send" style={{marginLeft:"auto"}} onClick={this._confirmAndSendBtnClick}/>
+                      <PrimaryButton text="Unlock" style={{marginLeft:"auto",display:this.state.hideUnlockButton}}/>
                       <PrimaryButton text="Cancel"style={{marginLeft:"auto"}} onClick={this._hideGrid}/>
                     
                     
@@ -353,7 +369,7 @@ private onCommentChange = (ev: React.FormEvent<HTMLInputElement | HTMLTextAreaEl
 
              
             </div>
-          {/* </div> */}
+          </div> 
         </div>
       
     );

@@ -378,7 +378,7 @@ this.setState({
                 <div style={{ marginLeft: "7%",marginRight:"auto",width:"28rem" }}>
                   {/* <div style={{fontSize:"18px",fontWeight:"bold",textAlign:"center"}}> Edit Document</div> */}
                   < TextField required id="t1"
-                        label="Name"                       
+                        label="Title"                       
                         onChange={this._titleChange}
                         //placeholder="Organization Details"                        
                         value={"Migration Policy"}>                          
@@ -387,6 +387,11 @@ this.setState({
                     < TextField 
                         label="Business Unit"                  
                         value={"BU1"} readOnly>  
+                                              
+                  </TextField>
+                  < TextField 
+                        label="Department"                  
+                        value={"HR"} readOnly>  
                                               
                   </TextField>
                   < TextField 
@@ -453,7 +458,7 @@ this.setState({
                     <PeoplePicker
                       context={this.props.context}
                       titleText="Approver"
-                      personSelectionLimit={3}
+                      personSelectionLimit={1}
                       groupName={""} // Leave this blank in case you want to filter from all users    
                       showtooltip={true}
                       required={false}
@@ -483,52 +488,36 @@ this.setState({
 
                         </div>                  
                    
-                   <div style={{ display: "flex" }}>
-                        <div>
-                            <DatePicker label="Expiry Date"
-                                style={{ width: '200px' }}
-                                value={this.state.expiredate}
-                                onSelectDate={this._onExpDatePickerChange}
-                                placeholder="Select a date..."
-                                ariaLabel="Select a date"
-                            />
-                        </div>
-                        <div style={{ padding: " 0 0 0 34px", display: this.state.hideExpLeadPeriod }}>
-                            < TextField id="ExpiryLeadPeriod"
-                                label="Expiry Lead  Period"                                
-                                value={this.state.ExpiryLeadPeriod} >
-                            </TextField>
-                        </div>
-                    </div>
+                   
                    <div style={{display:this.state.hideIfDocAttached}}>
-                    <Label >Select a Template:</Label>  <Dropdown id="t7"
-                        placeholder="Select an option"
-                        options={this.state.docs} onChanged={this.templatechange}
-                    />
-                    <Label >Upload Document:</Label> <input type="file" id="myfile" ></input>
-                    <div style={{ padding: "14px 0px 0 0" }} >
-                        <TooltipHost
-                            content="Check if the template or attachment is added"
-                            //id={tooltipId}
-                            calloutProps={calloutProps}
-                            styles={hostStyles}>
-                            <Checkbox label="Create Document ? " boxSide="end" onChange={this._onCreateDocChecked} />
-                        </TooltipHost>
-                    </div>
+                        <Label >Select a Template:</Label>  <Dropdown id="t7"
+                            placeholder="Select an option"
+                            options={this.state.docs} onChanged={this.templatechange}
+                        />
+                        <Label >Upload Document:</Label> <input type="file" id="myfile" ></input>
+                        <div style={{ padding: "14px 0px 0 0",display:"flex" }} >
+                            <TooltipHost
+                                content="Check if the template or attachment is added"
+                                //id={tooltipId}
+                                calloutProps={calloutProps}
+                                styles={hostStyles}>
+                                <Checkbox label="Create Document ? " boxSide="end" onChange={this._onCreateDocChecked} />
+                            </TooltipHost>
+                            <div style={{ display: this.state.hideDirectPublish, padding: "0px 0 0 18px" }}>
+                            <TooltipHost
+                                            content="The document to published library without sending it for review/approval"
+                                            //id={tooltipId}
+                                            calloutProps={calloutProps}
+                                            styles={hostStyles}>
+                                            <Checkbox label="Direct Publish ? " boxSide="end" onChange={this._onDirectPublishChecked} checked={this.state.directPublihCheck} />
+                                        </TooltipHost>
+                            </div>
+                        </div>
                     </div> 
-                    <div style={{ display: this.state.hideDirectPublish, padding: "5px 0 0 14px" }}>
+                    <div style={{ display: this.state.hideaAppDatePic, padding: "0 0 24px 0px" }}>
                         <table>
-                            <tr>
+                            <tr>                               
                                 <td>
-                                    <TooltipHost
-                                        content="The document to published library without sending it for review/approval"
-                                        //id={tooltipId}
-                                        calloutProps={calloutProps}
-                                        styles={hostStyles}>
-                                        <Checkbox label="Direct Publish ? " boxSide="end" onChange={this._onDirectPublishChecked} checked={this.state.directPublihCheck} />
-                                    </TooltipHost>
-                                </td>
-                                <td style={{ display: this.state.hideaAppDatePic, padding: "0 0 24px 16px" }}>
                                     <div style={{ display: "flex", }}>
                                        <td> <DatePicker label="Approval Date"
                                             style={{ width: '158px' }}
@@ -553,6 +542,23 @@ this.setState({
                         </table>
 
                     </div>
+                    <div style={{ display: "flex" }}>
+                        <div>
+                            <DatePicker label="Expiry Date"
+                                style={{ width: '162px' }}
+                                value={this.state.expiredate}
+                                onSelectDate={this._onExpDatePickerChange}
+                                placeholder="Select a date..."
+                                ariaLabel="Select a date"
+                            />
+                        </div>
+                        <div style={{ padding: " 0 0 0 19px", display: this.state.hideExpLeadPeriod }}>
+                            < TextField id="ExpiryLeadPeriod"
+                                label="Expiry Lead  Period"                                
+                                value={this.state.ExpiryLeadPeriod} >
+                            </TextField>
+                        </div>
+                    </div>
                     <div style={{ padding: "9px 0 0 0" }}>
                         <TooltipHost
                             content="Is the document is Critical"
@@ -571,8 +577,8 @@ this.setState({
                                         <Label style={{ color: "red", fontSize: "23px" }}>*</Label>
                                         <label style={{ fontStyle: "italic", fontSize: "12px" }}>fields are mandatory </label>
                                     </td>                                    
-                                    <PrimaryButton text="Submit" onClick={this._onCreateDocument} />
-                                    <DefaultButton style={{marginLeft:"7px"}} text="Cancel" onClick={this._onCancel} />
+                                    <DefaultButton style={{ borderRadius: "10px"}}text="Submit" onClick={this._onCreateDocument} />
+                                    <DefaultButton style={{marginLeft:"7px", borderRadius: "10px"}} text="Cancel" onClick={this._onCancel} />
                                     <PrimaryButton  style={{ float: "right", marginRight: "-44px", borderRadius: "10px", border: "1px solid gray",visibility:"hidden" }} text="Submit"   onClick={this._onCreateDocument} />
                                    {/* <DefaultButton style={{ float: "right", marginRight: "10px", borderRadius: "10px", border: "1px solid gray" }} text="Cancel" onClick={this._onCancel} /> */}
                                    
@@ -581,7 +587,7 @@ this.setState({
 
                         </table>
                     </DialogFooter>                        
-                        </div>    
+                 </div>    
 
     {/* //VersionHistroy                         */}
                         </PivotItem>
