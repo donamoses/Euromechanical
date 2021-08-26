@@ -285,7 +285,7 @@ export default class CreateDocument extends React.Component<ICreateDocumentProps
     }
 
     private _onCreateDocument = () => {
-        if (this.validator.fieldValid("Name") && this.validator.fieldValid("category") && this.validator.fieldValid("subCategory") && this.validator.fieldValid("businessUnit") && (this.state.directPublihCheck == false)) {
+        if (this.validator.fieldValid("Name") && this.validator.fieldValid("category") && this.validator.fieldValid("subCategory") && this.validator.fieldValid("businessUnit") && (this.state.directPublihCheck == false) || this.validator.fieldValid("depatment")) {
 
             this.validator.hideMessages();
             this.setState({ DocumentAdded: "" });
@@ -352,7 +352,12 @@ export default class CreateDocument extends React.Component<ICreateDocumentProps
             { key: '2', text: 'PDF' },
 
         ];
-       
+        const depOptions: IDropdownOption[] = [
+
+            { key: '1', text: 'HR' },
+            { key: '2', text: 'Marketing' },
+
+        ];
         return (
             <div className={styles.createDocument}>
                 <div style={{ marginLeft: "auto", marginRight: "auto", width: "35rem" }}>
@@ -363,7 +368,7 @@ export default class CreateDocument extends React.Component<ICreateDocumentProps
 
 
                     < TextField required id="t1"
-                        label="Name"
+                        label="Title"
                         onKeyUp={this._titleValidation}
                         onChange={this._titleChange}
                         value={this.state.title} style={{ width: "49.5rem" }}></TextField>
@@ -378,6 +383,13 @@ export default class CreateDocument extends React.Component<ICreateDocumentProps
                         options={BusinessUnit}
                         onChanged={this._drpdwnBUCateg} />
                     <div style={{ color: "#dc3545" }}>{this.validator.message("businessUnit", this.state.businessUnit, "required")}{" "}</div>
+                    <Dropdown id="t3" label="Department"
+                        required={true}
+                        selectedKey={this.state.deptkey}
+                        placeholder="Select an option"
+                        options={depOptions}
+                        onChanged={this._drpdwnDepCateg} />
+                    <div style={{ color: "#dc3545" }}>{this.validator.message("department", this.state.deptkey, "required")}{" "}</div>
 
                     <Dropdown id="t2" required={true} label="Category"
                         placeholder="Select an option"
@@ -386,7 +398,7 @@ export default class CreateDocument extends React.Component<ICreateDocumentProps
                         onChanged={this._drpdwnDocCateg} />
                     <div style={{ color: "#dc3545" }}>{this.validator.message("category", this.state.category, "required")}{" "}</div>
 
-                    <Dropdown id="t2" required={true} label="Sub Category"
+                    <Dropdown id="t2"  label="Sub Category"
                         placeholder="Select an option"
                         selectedKey={this.state.subCategoryKey}
                         options={SubCategory}
@@ -450,35 +462,14 @@ export default class CreateDocument extends React.Component<ICreateDocumentProps
                             principalTypes={[PrincipalType.User]}
                             resolveDelay={1000}
                             />
-
-                        </div>
-
-
-                    <div style={{ display: "flex" }}>
-                        <div>
-                            <DatePicker label="Expiry Date"
-                                style={{ width: '200px' }}
-                                value={this.state.expiredate}
-                                onSelectDate={this._onExpDatePickerChange}
-                                placeholder="Select a date..."
-                                ariaLabel="Select a date"
-                            />
-                        </div>
-                        <div style={{ padding: " 0 0 0 34px", display: this.state.hideExpLeadPeriod }}>
-                            < TextField id="ExpiryLeadPeriod"
-                                label="Expiry Lead  Period"
-                                onKeyUp={this._titleValidation}
-                                onChange={this._titleChange}
-                                value={this.state.ExpiryLeadPeriod} >
-                            </TextField>
-                        </div>
-                    </div>
-                    <Label >Select a Template:</Label>  <Dropdown id="t7"
+                        </div>                    
+                    <Label >Select a Template:</Label> 
+                     <Dropdown id="t7"
                         placeholder="Select an option"
                         options={this.state.docs} onChanged={this.templatechange}
                     />
                     <Label >Upload Document:</Label> <input type="file" id="myfile" ></input>
-                    <div style={{ padding: "14px 0px 0 0" }} >
+                    <div style={{ padding: "14px 0px 0 0",display:"flex"}} >
                         <TooltipHost
                             content="Check if the template or attachment is added"
                             //id={tooltipId}
@@ -486,23 +477,24 @@ export default class CreateDocument extends React.Component<ICreateDocumentProps
                             styles={hostStyles}>
                             <Checkbox label="Create Document ? " boxSide="end" onChange={this._onCreateDocChecked} />
                         </TooltipHost>
-                    </div>
-
-                    <div style={{ display: this.state.hideDirectPublish, padding: "5px 0 0 18px" }}>
-                        <table>
-                            <tr>
-                                <td>
-                                    <TooltipHost
+                        <div style={{ display: this.state.hideDirectPublish, padding: "0px 0 0 18px" }}>
+                        <TooltipHost
                                         content="The document to published library without sending it for review/approval"
                                         //id={tooltipId}
                                         calloutProps={calloutProps}
                                         styles={hostStyles}>
                                         <Checkbox label="Direct Publish ? " boxSide="end" onChange={this._onDirectPublishChecked} checked={this.state.directPublihCheck} />
                                     </TooltipHost>
-                                </td>
-                                <td style={{ display: this.state.hideaAppDatePic, padding: "0 0 24px 16px" }}>
+                        </div>
+                    </div>
+
+                   
+                       <div style={{ display: this.state.hideaAppDatePic, padding: "0 0 24px 0px" }}>
+                        <table>
+                            <tr>                            
+                               <td >
                                     <div style={{ display: "flex", }}>
-                                       <td> <DatePicker label="Approval Date"
+                                       <td> <DatePicker label="Approved Date"
                                             style={{ width: '200px' }}
                                             value={this.state.approvalDate}
                                             onSelectDate={this._onApprovalDatePickerChange}
@@ -523,7 +515,26 @@ export default class CreateDocument extends React.Component<ICreateDocumentProps
                                 </td>
                             </tr>
                         </table>
-
+                        </div>
+                   
+                    <div style={{ display: "flex" }}>
+                        <div>
+                            <DatePicker label="Expiry Date"
+                                style={{ width: '200px' }}
+                                value={this.state.expiredate}
+                                onSelectDate={this._onExpDatePickerChange}
+                                placeholder="Select a date..."
+                                ariaLabel="Select a date"
+                            />
+                        </div>
+                        <div style={{ padding: " 0 0 0 19px", display: this.state.hideExpLeadPeriod }}>
+                            < TextField id="ExpiryLeadPeriod"
+                                label="Expiry Lead  Period"
+                                onKeyUp={this._titleValidation}
+                                onChange={this._titleChange}
+                                value={this.state.ExpiryLeadPeriod} >
+                            </TextField>
+                        </div>
                     </div>
                     <div style={{ padding: "9px 0 0 0" }}>
                         <TooltipHost
