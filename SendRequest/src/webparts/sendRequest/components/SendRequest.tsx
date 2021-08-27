@@ -6,7 +6,7 @@ import { Checkbox, DatePicker, DefaultButton, DialogFooter, Dropdown, FontWeight
 import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/PeoplePicker";
 import SimpleReactValidator from 'simple-react-validator';
 import { sp, Web, View, ContentType } from "@pnp/sp/presets/all";
-
+import { useMediaQuery } from 'react-responsive';
 export interface ISendRequestState {
   currentuser: any;
   verifierId: any;
@@ -19,6 +19,17 @@ export interface ISendRequestState {
   comments:string;
   expiryDate:any;
 }
+const Desktop = ({ children }) => {
+  const isDesktop = useMediaQuery({ minWidth: 501, maxWidth: 10000 });
+  return isDesktop ? children : null;
+};
+// For mobile view 
+const Mobile = ({ children }) => {
+  const isMobile = useMediaQuery({ maxWidth: 500 });
+  
+  return isMobile ? children : null;
+  
+};
 export default class SendRequest extends React.Component<ISendRequestProps, ISendRequestState, {}> {
   private validator: SimpleReactValidator;
   public constructor(props: ISendRequestProps) {
@@ -150,6 +161,7 @@ const CategoryOptions:IDropdownOption[]=[
     };
     return (
       <div className={styles.sendRequest} >
+        <Desktop>
          <div style={{ marginLeft: "auto",marginRight:"auto",width:"50rem" }}>
          <div className={styles.title}> Review and approval request form</div>
          <br></br>
@@ -295,7 +307,153 @@ const CategoryOptions:IDropdownOption[]=[
                         </table>
                     </DialogFooter>
         </div>
-        </div>  
+        </div> 
+        </Desktop> 
+        <Mobile>
+        <div style={{ marginLeft: "auto",marginRight:"auto" }}>
+         <div className={styles.title} style={{ marginLeft: "auto",marginRight:"auto",width:"18rem" }} > Review and approval request form</div>
+         
+         <br></br>
+         <div></div>
+             <div >Document ID : NOT/SHML/INT-PRC/AM-00009</div>
+                    
+           <br></br>
+         
+        <div >
+          
+          <Label >Document :  <a href={this.state.LinkToDoc}>NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</a></Label>
+          <div></div>
+          <table>
+            <tr><td><Label >Orginator : SUNIL JOHN </Label></td></tr>
+            <tr><td><Label >Requester : SUBHA RAVEENDRAN</Label></td></tr>
+            <tr><td ><Label >Revision : 0 </Label></td> 
+            <td style={{  float: "right"}} > <Link onClick={this._openRevisionHistory} underline>Revision History </Link>  </td></tr>
+            
+            {/* <tr>
+              <td><Label >Business Unit : BU1 </Label></td>
+              <td><Label >Category : CAT1 </Label></td>
+              <td><Label >Sub-Category : SubCat1 </Label></td>
+            </tr> */}
+          </table>
+          <table>
+            <tr hidden={this.state.hideproject}>
+              <td style={{width:"50%"}}>
+                <Dropdown id="RevisionLevel"
+                  placeholder="Select an option"
+                  label="Revision Level"
+                  options={level}
+
+                // styles={dropdownStyles}
+                // selectedKey={this.state.selectedmin}
+                // onChanged={(option) => this.min(option)}
+                />
+              </td></tr>
+              <tr hidden={this.state.hideproject}>
+              <td>
+                <PeoplePicker
+                  context={this.props.context}
+                  titleText="DCC"
+                  personSelectionLimit={1}
+                  groupName={""} // Leave this blank in case you want to filter from all users    
+                  showtooltip={true}
+                  disabled={false}
+                  ensureUser={true}
+                  // selectedItems={this._getVerifier}
+                  defaultSelectedUsers={[this.state.dcc]}
+                  showHiddenInUI={false}
+                  // isRequired={true}
+                  principalTypes={[PrincipalType.User]}
+                  resolveDelay={1000}
+                />
+              </td>
+            </tr>
+          </table>
+          <table>
+            
+            <tr>
+              <td>
+                <PeoplePicker
+                  context={this.props.context}
+                  titleText="Reviewer(s)"
+                  personSelectionLimit={8}
+                  groupName={""} // Leave this blank in case you want to filter from all users    
+                  showtooltip={true}
+                  disabled={false}
+                  ensureUser={true}
+                  // selectedItems={this._getVerifier}
+                  defaultSelectedUsers={[this.state.Reviewer]}
+                  showHiddenInUI={false}
+                  // isRequired={true}
+                  principalTypes={[PrincipalType.User]}
+                  resolveDelay={1000}
+                />
+              </td>
+              
+            </tr>
+          </table>
+          <table>
+            <tr>
+            <td>
+              <PeoplePicker
+                context={this.props.context}
+                titleText="Approver"
+                personSelectionLimit={1}
+                groupName={""} // Leave this blank in case you want to filter from all users    
+                showtooltip={true}
+                disabled={false}
+                ensureUser={true}
+                onChange={this._Approver}
+                //selectedItems={[this.state.approver]}
+                //defaultSelectedUsers={[this.state.approver]}
+                showHiddenInUI={false}
+                required={true}
+                principalTypes={[PrincipalType.User]}
+                resolveDelay={1000}
+              />
+                  <div style={{ color: "#dc3545" }}>{this.validator.message("Approver", this.state.approver, "required")}{" "}</div>
+              </td></tr>
+             <tr> <td>
+                <DatePicker label="Due Date:" id="DueDate" 
+                  onSelectDate={this._onExpDatePickerChange}
+                  placeholder="Select a date..."
+                  isRequired={true}
+                  value={this.state.expiryDate}
+                  minDate={new Date()}
+                  // className={controlClass.control}
+                  // onSelectDate={this._onDatePickerChange}                 
+                />
+                <div style={{ color: "#dc3545" }}>{this.validator.message("ExpiryDate", this.state.expiryDate, "required")}{" "}</div>
+              </td>
+              
+            </tr>
+          </table>
+          <table>
+
+            <tr><td> <TextField label="Comments" id="Comments" multiline autoAdjustHeight value={this.state.comments} onChange={this._commentsChange}  /></td></tr>
+            <tr><td hidden={this.state.hideproject}><Checkbox label="Approve in same revision ? " boxSide="end" /></td></tr>
+          </table>
+          <div style={{ display: this.state.RequestSend }}>
+                        <MessageBar messageBarType={MessageBarType.success} isMultiline={false}>  Request send successfully.</MessageBar>
+                    </div> 
+          <DialogFooter>
+                        <table style={{ float: "right" }}>
+                            <tr>
+                                <div>
+                                    <td style={{ display: "flex" ,padding: "0 0 0 125px"}}>
+                                        <Label style={{ color: "red", fontSize: "23px" }}>*</Label>
+                                        <label style={{ fontStyle: "italic", fontSize: "12px" }}>fields are mandatory </label>
+                                    </td>
+                                    <DefaultButton style={{ float: "right", borderRadius: "10px", border: "1px solid gray" }} text="Cancel" onClick={this._onCancel}></DefaultButton >
+                                    <DefaultButton style={{ float: "right", marginRight: "10px", borderRadius: "10px", border: "1px solid gray" }} text="Submit" onClick={this._submitSendRequest} />
+
+                                </div>
+                            </tr>
+
+                        </table>
+                    </DialogFooter>
+        </div>
+        </div> 
+        </Mobile>
       </div>
     );
   }

@@ -75,6 +75,9 @@ export default class InboundSubContractor extends React.Component<IInboundSubCon
          className={styles['ms-SearchBox']}/>  
         </div>
         <hr  style={{marginTop:"20px"}}/>
+        <div style={{display:"flex",margin:"7px"}}>
+        <Label >Upload Document:</Label> <input  type="file" id="myfile"  style={{marginLeft:"-105px",padding:"33px 0px 0px 0px"}}></input>
+        </div>
         <div style={{display:"flex",margin:"7px"}}> 
           <Dropdown 
           style={{ width: '300px',marginRight:'76px' }}
