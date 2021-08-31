@@ -1,4 +1,4 @@
-# notification-prf
+# notification-preferance
 
 ## Summary
 

@@ -3,8 +3,8 @@
     "isCreatingSolution": true,
     "environment": "spo",
     "version": "1.12.1",
-    "libraryName": "notification-prf",
-    "libraryId": "d6cadc47-16f5-4fce-bff4-a73a049b06cb",
+    "libraryName": "notification-preferance",
+    "libraryId": "b1f0d6ac-c3f5-4c24-be77-a29078b89b9e",
     "packageManager": "npm",
     "isDomainIsolated": false,
     "componentType": "webpart"

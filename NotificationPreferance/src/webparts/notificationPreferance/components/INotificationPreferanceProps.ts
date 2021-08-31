@@ -1,4 +1,4 @@
-export interface INotificationPrefrenceProps {
+export interface INotificationPreferanceProps {
   description: string;
   noNotification:string;
   notiForCriticalDoc:string;

@@ -7,19 +7,19 @@ import {
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 
-import * as strings from 'NotificationPrefrenceWebPartStrings';
-import NotificationPrefrence from './components/NotificationPrefrence';
-import { INotificationPrefrenceProps } from './components/INotificationPrefrenceProps';
+import * as strings from 'NotificationPreferanceWebPartStrings';
+import NotificationPreferance from './components/NotificationPreferance';
+import { INotificationPreferanceProps } from './components/INotificationPreferanceProps';
 
-export interface INotificationPrefrenceWebPartProps {
+export interface INotificationPreferanceWebPartProps {
   description: string;
 }
 
-export default class NotificationPrefrenceWebPart extends BaseClientSideWebPart<INotificationPrefrenceProps> {
+export default class NotificationPreferanceWebPart extends BaseClientSideWebPart<INotificationPreferanceProps> {
 
   public render(): void {
-    const element: React.ReactElement<INotificationPrefrenceProps> = React.createElement(
-      NotificationPrefrence,
+    const element: React.ReactElement<INotificationPreferanceProps> = React.createElement(
+      NotificationPreferance,
       {
         description: this.properties.description,
         noNotification:this.properties.noNotification,
