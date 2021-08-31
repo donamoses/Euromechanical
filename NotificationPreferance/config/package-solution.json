@@ -1,8 +1,8 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
   "solution": {
-    "name": "notification-prf-client-side-solution",
-    "id": "d6cadc47-16f5-4fce-bff4-a73a049b06cb",
+    "name": "notification-preferance-client-side-solution",
+    "id": "b1f0d6ac-c3f5-4c24-be77-a29078b89b9e",
     "version": "1.0.0.0",
     "includeClientSideAssets": true,
     "isDomainIsolated": false,
@@ -15,6 +15,6 @@
     }
   },
   "paths": {
-    "zippedPackage": "solution/notification-prf.sppkg"
+    "zippedPackage": "solution/notification-preferance.sppkg"
   }
 }
