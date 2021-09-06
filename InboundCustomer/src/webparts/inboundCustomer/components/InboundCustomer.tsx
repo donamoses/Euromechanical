@@ -36,7 +36,7 @@ export default class InboundCustomer extends React.Component<IInboundCustomerPro
       AddIndex:true,
       AddDoc:true,
     });
-   
+    window.location.replace(this.props.RedirectUrl);
   }
   private _handleFileUpload(file: IFilePickerResult[]){
     if (file[0].fileAbsoluteUrl == null) {  
@@ -65,7 +65,7 @@ export default class InboundCustomer extends React.Component<IInboundCustomerPro
     return (
       <div className={ styles.inboundCustomer }>
         <div style={{ marginLeft: "auto",marginRight:"auto",width:"50rem" }}>
-        <div style={{fontWeight:"bold",fontSize:"15px",textAlign:"center"}}> Inbound Transmittal from Euromechanical</div>
+        <div style={{fontWeight:"bold",fontSize:"15px",textAlign:"center"}}> Inbound Transmittal from ADNOC</div>
         <div className={styles.row}>
         
         <div style={{display:"flex",margin:"7px"}}>

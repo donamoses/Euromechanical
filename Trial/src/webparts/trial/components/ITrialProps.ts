@@ -1,7 +1,5 @@
 import { WebPartContext } from "@microsoft/sp-webpart-base";
-export interface IInboundCustomerProps {
+export interface ITrialProps {
   description: string;
   context: WebPartContext;
-  RedirectUrl:string;
-
 }

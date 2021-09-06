@@ -1,0 +1,20 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "trial-client-side-solution",
+    "id": "f7fabd30-082f-480d-9571-87f85773e6b5",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": ""
+    } 
+  },
+  "paths": {
+    "zippedPackage": "solution/trial.sppkg"
+  }
+}

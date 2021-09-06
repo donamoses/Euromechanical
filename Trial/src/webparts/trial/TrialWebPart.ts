@@ -6,16 +6,17 @@ import {
   PropertyPaneTextField
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
-import { sp } from '@pnp/sp';
-import * as strings from 'InboundCustomerWebPartStrings';
-import InboundCustomer from './components/InboundCustomer';
-import { IInboundCustomerProps } from './components/IInboundCustomerProps';
 
-export interface IInboundCustomerWebPartProps {
+import * as strings from 'TrialWebPartStrings';
+import Trial from './components/Trial';
+import { ITrialProps } from './components/ITrialProps';
+import { sp } from '@pnp/sp';
+
+export interface ITrialWebPartProps {
   description: string;
 }
 
-export default class InboundCustomerWebPart extends BaseClientSideWebPart<IInboundCustomerProps> {
+export default class TrialWebPart extends BaseClientSideWebPart<ITrialWebPartProps> {
   public onInit(): Promise<void> {
     return super.onInit().then(_ => {
       sp.setup({
@@ -24,12 +25,11 @@ export default class InboundCustomerWebPart extends BaseClientSideWebPart<IInbou
     });
   }
   public render(): void {
-    const element: React.ReactElement<IInboundCustomerProps> = React.createElement(
-      InboundCustomer,
+    const element: React.ReactElement<ITrialProps> = React.createElement(
+      Trial,
       {
         description: this.properties.description,
-        context: this.context,
-        RedirectUrl:this.properties.RedirectUrl
+        context:this.context
       }
     );
 
@@ -57,9 +57,6 @@ export default class InboundCustomerWebPart extends BaseClientSideWebPart<IInbou
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
-                }),
-                PropertyPaneTextField('RedirectUrl', {
-                  label:'RedirectUrl'
                 })
               ]
             }
