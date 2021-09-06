@@ -34,7 +34,7 @@ export default class InboundSubContractor extends React.Component<IInboundSubCon
       AddIndex:true,
       AddDoc:true,
     });
-   
+    window.location.replace(this.props.RedirectUrl);
   }
   public render(): React.ReactElement<IInboundSubContractorProps> {
     const DeleteIcon: IIconProps = { iconName: 'Delete' };
@@ -56,7 +56,7 @@ export default class InboundSubContractor extends React.Component<IInboundSubCon
     return (
       <div className={ styles.inboundSubContractor }>
          <div style={{ marginLeft: "auto",marginRight:"auto",width:"50rem" }}>
-         <div style={{fontWeight:"bold",fontSize:"15px",textAlign:"center"}}> Inbound Transmittal from Euromechanical</div>
+         <div style={{fontWeight:"bold",fontSize:"15px",textAlign:"center"}}> Inbound Transmittal from ADNOC</div>
         <div className={styles.row}>
         
         <div style={{display:"flex",margin:"7px"}}>
