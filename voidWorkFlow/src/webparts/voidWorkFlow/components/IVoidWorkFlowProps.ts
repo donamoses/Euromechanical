@@ -6,5 +6,6 @@ export interface IVoidWorkFlowProps {
   DueDateDefault:number;
   RetentionPeriod:string;
   project:string;
+  RedirectUrl:string;
 
 }

@@ -21,7 +21,8 @@
     "description": { "default": "EditDocument description" },
     "officeFabricIconFontName": "Page",
     "properties": {
-      "description": "EditDocument"
+      "description": "EditDocument",
+      "RedirectUrl":"https://ccsdev01.sharepoint.com/sites/qdms/Lists/DocumentIndex/AllItems.aspx"
     }
   }]
 }

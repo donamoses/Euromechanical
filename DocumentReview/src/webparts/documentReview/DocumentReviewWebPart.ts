@@ -17,7 +17,7 @@ export interface IDocumentReviewWebPartProps {
   project:string;
 }
 
-export default class DocumentReviewWebPart extends BaseClientSideWebPart<IDocumentReviewWebPartProps> {
+export default class DocumentReviewWebPart extends BaseClientSideWebPart<IDocumentReviewProps> {
   public onInit(): Promise<void> {
     return super.onInit().then(_ => {
       sp.setup({
@@ -31,7 +31,8 @@ export default class DocumentReviewWebPart extends BaseClientSideWebPart<IDocume
       {
         context: this.context,
         description: this.properties.description,
-        project:this.properties.project
+        project:this.properties.project,
+        RedirectUrl:this.properties.RedirectUrl,
       }
     );
 
@@ -59,6 +60,9 @@ export default class DocumentReviewWebPart extends BaseClientSideWebPart<IDocume
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
+                }),
+                PropertyPaneTextField('RedirectUrl', {
+                  label: "RedirectUrl"
                 }),
                 PropertyPaneToggle('project',{
                   label:'Project',

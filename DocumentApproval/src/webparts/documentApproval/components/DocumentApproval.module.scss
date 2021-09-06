@@ -108,9 +108,14 @@
 }
 .tableClass {
   border: 1px solid black;
-  border-collapse: collapse;
+  //border-collapse: collapse;
   
   .td{
     text-align: center;
+    border: 1px solid black;
+  }
+  .th{
+    text-align: center;
+    border: 1px solid black;
   }
 }

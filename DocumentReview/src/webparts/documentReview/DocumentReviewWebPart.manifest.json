@@ -21,7 +21,8 @@
     "description": { "default": "DocumentReview description" },
     "officeFabricIconFontName": "Page",
     "properties": {
-      "description": "DocumentReview"
+      "description": "DocumentReview",
+      "RedirectUrl":"https://ccsdev01.sharepoint.com/sites/qdms/Lists/DocumentIndex/AllItems.aspx"
     }
   }]
 }

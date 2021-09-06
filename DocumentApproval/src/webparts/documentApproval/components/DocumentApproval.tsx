@@ -39,6 +39,7 @@ export default class DocumentApproval extends React.Component<IDocumentApprovalP
     this._status=this._status.bind(this);
     this._docApproval=this._docApproval.bind(this);
     this._openRevisionHistory=this._openRevisionHistory.bind(this);
+    this._onCancel=this._onCancel.bind(this);
   }
   public async componentDidMount() {
       console.log(this.props.project);
@@ -66,7 +67,8 @@ export default class DocumentApproval extends React.Component<IDocumentApprovalP
             if(this.validator.fieldValid("publishFormat") && this.validator.fieldValid("status")){
               this.validator.hideMessages();
               this.setState({ approveDocument: "" });
-              setTimeout(() => this.setState({ approveDocument: 'none' }), 1000);
+              setTimeout(() => this.setState({ approveDocument: 'none' }), 3000);
+              window.location.replace(this.props.RedirectUrl);
             }
             else {
               this.validator.showMessages();
@@ -76,11 +78,18 @@ export default class DocumentApproval extends React.Component<IDocumentApprovalP
   private _openRevisionHistory=()=>{
     window.open("https://ccsdev01.sharepoint.com/sites/TrialTest/SitePages/RevisionHistory.aspx");
   }
+  private _onCancel = () => {
+    // window.location.href = this.props.RedirectUrl;
+   
+    window.location.replace(this.props.RedirectUrl);
+  }
   public render(): React.ReactElement<IDocumentApprovalProps> {
     const Status: IDropdownOption[] = [
 
       { key: 'Approved', text: 'Approved' },
+      { key: 'Rejected', text: 'Return with comments' },
       { key: 'Rejected', text: 'Rejected' },
+
      
     ];
     const PublishOption: IDropdownOption[] = [
@@ -96,7 +105,7 @@ export default class DocumentApproval extends React.Component<IDocumentApprovalP
         <br></br>
          <div></div>
            <div style={{display:"flex"}}>
-             <div>Document ID : NOT/SHML/INT-PRC/AM-00009</div>
+             <div style={{fontWeight:"bold"}}>Document ID : EMEC_1010_00001</div>
              <div style={{padding:"0 0 0 366px"}}>
              <Link onClick={this._openRevisionHistory} underline>
              Revision History
@@ -104,7 +113,7 @@ export default class DocumentApproval extends React.Component<IDocumentApprovalP
            </div>
            <br></br>
         <div >         
-          <Label >Document :  <a href={this.state.LinkToDoc}>NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</a></Label>
+          <Label >Document :  <a href={this.state.LinkToDoc}>EMEC_1010_00001_MigrationDocument.docx</a></Label>
           <table>
             <tr>
               <td><Label >Revision : 0 </Label></td>
@@ -137,6 +146,11 @@ export default class DocumentApproval extends React.Component<IDocumentApprovalP
               </th>
                 <tr className={styles.td} >
                   <td style={{textAlign:"center"}}> SUBHA RAVEENDRAN </td>
+                  <td style={{textAlign:"center"}}> 21 JUL 2021 </td>
+                  <td style={{textAlign:"center"}} >Requested to approve the document</td>
+                </tr>
+                <tr className={styles.td} >
+                  <td style={{textAlign:"center"}}> SUNIL JOHN </td>
                   <td style={{textAlign:"center"}}> 21 JUL 2021 </td>
                   <td style={{textAlign:"center"}} >Requested to approve the document</td>
                 </tr>
@@ -176,9 +190,9 @@ export default class DocumentApproval extends React.Component<IDocumentApprovalP
                                         <label style={{ fontStyle: "italic", fontSize: "12px" }}>fields are mandatory </label>
                                     </td>
                                     
-                                    <DefaultButton id="b1" style={{ float: "right", borderRadius: "10px", border: "1px solid gray"  }}>Cancel</DefaultButton >
+                                    <DefaultButton id="b1" style={{ float: "right", borderRadius: "10px", border: "1px solid gray"  }} onClick={this._onCancel }>Cancel</DefaultButton >
                                     <DefaultButton id="b2" style={{  float: "right", marginRight: "10px", borderRadius: "10px", border: "1px solid gray" }}  onClick={this._docApproval}>Submit</DefaultButton >
-                                    <DefaultButton id="b2" style={{ float: "right", marginRight: "10px", borderRadius: "10px", border: "1px solid gray" }}>Save</DefaultButton >
+                                    <DefaultButton id="b2" style={{ float: "right", marginRight: "10px", borderRadius: "10px", border: "1px solid gray" }}>Save as draft</DefaultButton >
 
                                 
                             </tr>

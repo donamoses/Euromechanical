@@ -21,7 +21,8 @@
     "description": { "default": "SendRequest description" },
     "officeFabricIconFontName": "Page",
     "properties": {
-      "description": "SendRequest"
+      "description": "SendRequest",
+      "RedirectUrl":"https://ccsdev01.sharepoint.com/sites/qdms/Lists/DocumentIndex/AllItems.aspx"
     }
   }]
 }

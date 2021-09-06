@@ -1,0 +1,28 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "task-delegation-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/taskDelegation/TaskDelegationWebPart.js",
+          "manifest": "./src/webparts/taskDelegation/TaskDelegationWebPart.manifest.json"
+        }
+      ]
+    },
+    "re-assign-document-originator-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/reAssignDocumentOriginator/ReAssignDocumentOriginatorWebPart.js",
+          "manifest": "./src/webparts/reAssignDocumentOriginator/ReAssignDocumentOriginatorWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "TaskDelegationWebPartStrings": "lib/webparts/taskDelegation/loc/{locale}.js",
+    "ReAssignDocumentOriginatorWebPartStrings": "lib/webparts/reAssignDocumentOriginator/loc/{locale}.js",
+    "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js"
+  }
+}

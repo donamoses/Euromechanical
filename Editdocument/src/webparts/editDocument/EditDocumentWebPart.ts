@@ -35,6 +35,7 @@ export default class EditDocumentWebPart extends BaseClientSideWebPart<IEditDocu
         createdocument:this.properties.createdocument,
         project:this.properties.project,
         RedirectUrl:this.properties.RedirectUrl,
+        DocumentID:this.properties.DocumentID,
       }
     );
 
@@ -62,6 +63,12 @@ export default class EditDocumentWebPart extends BaseClientSideWebPart<IEditDocu
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
+                }),
+                PropertyPaneTextField('RedirectUrl', {
+                  label: "RedirectUrl"
+                }),
+                PropertyPaneTextField('DocumentID', {
+                  label: "Document ID"
                 }),
                 PropertyPaneToggle('createdocument',{
                   label:'CreateDocument',

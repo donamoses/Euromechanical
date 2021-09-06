@@ -3,4 +3,5 @@ export interface IDocumentReviewProps {
   description: string;
   context: WebPartContext;
   project:string;
+  RedirectUrl:string;
 }

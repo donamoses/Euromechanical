@@ -60,6 +60,10 @@ export interface ICreateDocumentState {
     publishOption: string;
     hideProject:boolean;
     dcc: any;
+    selectTemplate:string;
+    selectTemplateKey:string;
+    revisionCodeKey:string,
+            revisionCode:string,
 }
 export default class CreateDocument extends React.Component<ICreateDocumentProps, ICreateDocumentState, any> {
     private validator: SimpleReactValidator;
@@ -107,24 +111,30 @@ export default class CreateDocument extends React.Component<ICreateDocumentProps
             publishOption: "",
             hideProject:true,
             dcc: "",
+            selectTemplate:"",
+            selectTemplateKey:"",
+            revisionCodeKey:"",
+            revisionCode:"",
         };
 
         this._drpdwnDocCateg = this._drpdwnDocCateg.bind(this);
         this._drpdwnDepCateg = this._drpdwnDepCateg.bind(this);
         this._drpdwnSubCateg = this._drpdwnSubCateg.bind(this);
         this._drpdwnPublishFormat = this._drpdwnPublishFormat.bind(this);
+        this._drpdwnSelectTemplate = this._drpdwnSelectTemplate.bind(this);
         this._drpdwnBUCateg = this._drpdwnBUCateg.bind(this);
         this._onCancel = this._onCancel.bind(this);
         this.templatechange = this.templatechange.bind(this);
         this._titleValidation = this._titleValidation.bind(this);
         this._onCreateDocChecked = this._onCreateDocChecked.bind(this);
+        this._drpdwnRevisonCode=this._drpdwnRevisonCode.bind(this);
     }
     public async componentDidMount() {
 
        
         console.log(this.props.project);
         if (this.props.project) {
-          this.setState({ hideProject: false });
+          this.setState({ hideProject: false ,  hideDirectPublish: 'none'});
         }
       }
 
@@ -153,6 +163,9 @@ export default class CreateDocument extends React.Component<ICreateDocumentProps
     private _titleChange = (ev: React.FormEvent<HTMLInputElement>, Title?: string) => {
         this.setState({ title: Title || '' });
     }
+    private _expLeadPeriodChange = (ev: React.FormEvent<HTMLInputElement>, ExpLeadPeriod?: string) => {
+        this.setState({ ExpiryLeadPeriod: ExpLeadPeriod || '' });
+    }
     public _drpdwnDocCateg(option: { key: any; text: any }) {
         //console.log(option.key);
         this.setState({ categoryKey: option.key, category: option.text });
@@ -169,6 +182,14 @@ export default class CreateDocument extends React.Component<ICreateDocumentProps
     public _drpdwnPublishFormat(option: { key: any; text: any }) {
         //console.log(option.key);
         this.setState({ publishOptionKey: option.key, publishOption: option.text });
+    }
+    public _drpdwnSelectTemplate(option: { key: any; text: any }) {
+        //console.log(option.key);
+        this.setState({ selectTemplateKey: option.key, selectTemplate: option.text });
+    }
+    public _drpdwnRevisonCode(option: { key: any; text: any }) {
+        //console.log(option.key);
+        this.setState({ revisionCodeKey: option.key, revisionCode: option.text });
     }
     public _drpdwnDepCateg = async (option) => {
         console.log(option.key);
@@ -269,15 +290,22 @@ export default class CreateDocument extends React.Component<ICreateDocumentProps
     }
 
     private _onCreateDocChecked = (ev: React.FormEvent<HTMLInputElement>, isChecked?: boolean) => {
-        if (isChecked) { this.setState({ hideDirectPublish: "", }); }
-        else if (!isChecked) {
-            this.setState({ hideDirectPublish: "none", hideaAppDatePic: "none", });
-            if (this.state.directPublihCheck == true) {
-                this.setState({
-                    directPublihCheck: false,
-                });
-            }
+        if(this.props.project){
+            if (isChecked) { this.setState({ hideDirectPublish: "none", }); }
         }
+        else{
+            if (isChecked) { this.setState({ hideDirectPublish: "", }); }
+            else if (!isChecked) {
+                this.setState({ hideDirectPublish: "none", hideaAppDatePic: "none", });
+                if (this.state.directPublihCheck == true) {
+                    this.setState({
+                        directPublihCheck: false,
+                    });
+                }
+            }
+
+        }
+       
     }
     private _onDirectPublishChecked = (ev: React.FormEvent<HTMLInputElement>, isChecked?: boolean) => {
         if (isChecked) { this.setState({ hideaAppDatePic: "", directPublihCheck: true }); }
@@ -290,7 +318,7 @@ export default class CreateDocument extends React.Component<ICreateDocumentProps
             this.validator.hideMessages();
             this.setState({ DocumentAdded: "" });
             setTimeout(() => this.setState({ DocumentAdded: 'none' }), 1000);
-
+            window.location.replace(this.props.RedirectUrl);
 
             // this._onCancel();
         }
@@ -298,6 +326,7 @@ export default class CreateDocument extends React.Component<ICreateDocumentProps
             this.validator.hideMessages();
             this.setState({ DocumentAdded: "" });
             setTimeout(() => this.setState({ DocumentAdded: 'none' }), 1000);
+            window.location.replace(this.props.RedirectUrl);
         }
         else {
             this.validator.showMessages();
@@ -325,25 +354,32 @@ export default class CreateDocument extends React.Component<ICreateDocumentProps
             subCategoryKey: "",
             publishOption: "",
         });
+        window.location.replace(this.props.RedirectUrl);
     }
 
     public render(): React.ReactElement<ICreateDocumentProps> {
         const BusinessUnit: IDropdownOption[] = [
-
-            { key: '1', text: 'BU1' },
-            { key: '2', text: 'BU2' },
-
+            { key: '1', text: 'Avanced Technologies and Solutions' },
+            { key: '2', text: 'Upstream' },
+            { key: '3', text: 'Construction and Fabrication' },
+            { key: '4', text: 'Bolting and Machining Solutions' },
+            { key: '5', text: 'Manpower Services' },
+            { key: '6', text: 'Shared Services' },
+            { key: '7', text: 'Instrument Calibration Services' },
         ];
         const Category: IDropdownOption[] = [
 
-            { key: '1', text: 'Cat1' },
-            { key: '2', text: 'Cat2' },
-
+            { key: '1', text: ' Corporate Records' },
+            
         ];
         const SubCategory: IDropdownOption[] = [
 
-            { key: '1', text: 'SubCat1' },
-            { key: '2', text: 'SubCat2' },
+            { key: '1', text: 'Accreditation' },
+            { key: '2', text: 'Legal Documents' },
+            { key: '3', text: 'Trade Licenses ' },
+            { key: '4', text: 'Corporate Structure'},
+            { key: '5', text: 'Organizational Charts '} ,
+           
 
         ];
         const publishFormat: IDropdownOption[] = [
@@ -352,11 +388,29 @@ export default class CreateDocument extends React.Component<ICreateDocumentProps
             { key: '2', text: 'PDF' },
 
         ];
+        const selectTemplate: IDropdownOption[] = [
+
+            { key: '1', text: 'EMEC_1010_00001_MigrationDocument' },
+            { key: '2', text: 'EMEC_1010_00002_SRSDocument' },
+
+        ];
         const depOptions: IDropdownOption[] = [
-
-            { key: '1', text: 'HR' },
-            { key: '2', text: 'Marketing' },
-
+                      
+            { key: '1', text: 'Corporate' },
+            { key: '2', text: 'Finance' },
+            { key: '3', text: 'Business Support' },
+            { key: '4', text: 'Human Resources' },
+            { key: '5', text: 'HSE' },
+            { key: '6', text: 'Quality' },
+            { key: '7', text: 'IT' },
+        ];
+        const RevisionCode: IDropdownOption[] = [
+                      
+            { key: '1', text: 'ABC' },
+            { key: '2', text: '123' },
+            { key: '3', text: 'A1' },
+            { key: '4', text: 'AZ19' },
+           
         ];
         return (
             <div className={styles.createDocument}>
@@ -384,7 +438,7 @@ export default class CreateDocument extends React.Component<ICreateDocumentProps
                         onChanged={this._drpdwnBUCateg} />
                     <div style={{ color: "#dc3545" }}>{this.validator.message("businessUnit", this.state.businessUnit, "required")}{" "}</div>
                     <Dropdown id="t3" label="Department"
-                        required={true}
+                       
                         selectedKey={this.state.deptkey}
                         placeholder="Select an option"
                         options={depOptions}
@@ -404,7 +458,12 @@ export default class CreateDocument extends React.Component<ICreateDocumentProps
                         options={SubCategory}
                         onChanged={this._drpdwnSubCateg} />
                     <div style={{ color: "#dc3545" }}>{this.validator.message("subCategory", this.state.subCategory, "required")}{" "}</div>
-
+                    <Dropdown id="t2"  label="Revision Code"
+                        placeholder="Select an option"
+                        selectedKey={this.state.revisionCode}
+                        options={RevisionCode}
+                        onChanged={this._drpdwnRevisonCode} />
+                   
                     <PeoplePicker
                         context={this.props.context}
                         titleText="Originator"
@@ -466,7 +525,9 @@ export default class CreateDocument extends React.Component<ICreateDocumentProps
                     <Label >Select a Template:</Label> 
                      <Dropdown id="t7"
                         placeholder="Select an option"
-                        options={this.state.docs} onChanged={this.templatechange}
+                        options={selectTemplate} 
+                        selectedKey={this.state.selectTemplateKey}
+                        onChanged={this._drpdwnSelectTemplate}
                     />
                     <Label >Upload Document:</Label> <input type="file" id="myfile" ></input>
                     <div style={{ padding: "14px 0px 0 0",display:"flex"}} >
@@ -529,9 +590,8 @@ export default class CreateDocument extends React.Component<ICreateDocumentProps
                         </div>
                         <div style={{ padding: " 0 0 0 19px", display: this.state.hideExpLeadPeriod }}>
                             < TextField id="ExpiryLeadPeriod"
-                                label="Expiry Lead  Period"
-                                onKeyUp={this._titleValidation}
-                                onChange={this._titleChange}
+                                label="Expiry Lead  Period"                               
+                                onChange={this._expLeadPeriodChange}
                                 value={this.state.ExpiryLeadPeriod} >
                             </TextField>
                         </div>

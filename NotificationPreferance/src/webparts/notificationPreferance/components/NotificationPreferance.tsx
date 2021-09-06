@@ -51,13 +51,13 @@ private closeTeachingBubble(){
     return (
       <div className={ styles.notificationPreferance }>
         
-              <Label>Notification Preference </Label>
+              <Label style={{textAlign:"center"}}>Notification Preference </Label>
               <div style={{marginTop:"20px"}}  className={styles['labelWrapper-124']}>
               <ChoiceGroup  defaultSelectedKey="sendIfCritical"defaultValue={this.state.notifiPrefText} options={options} style={{marginLeft:"252px",marginTop:"12px"}} styles={searchBoxStyles}  id={'targetChoice'}      onChange={this.notifiPrefSelect}/>
               <div >
-              <ClapSpinner size={30} backColor="#48d60e" loading={true} />
+              {/* <ClapSpinner size={30} backColor="#48d60e" loading={true} />
               <ProgressIndicator  description="Saving successfully...." />
-              <Spinner size={SpinnerSize.large} label="loading....." labelPosition="right" />
+              <Spinner size={SpinnerSize.large} label="loading....." labelPosition="right" /> */}
               {/* <TeachingBubble              
                 target="#targetChoice"
                 calloutProps={{ directionalHint: DirectionalHint.bottomCenter }}

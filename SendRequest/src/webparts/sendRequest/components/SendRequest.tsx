@@ -74,7 +74,7 @@ export default class SendRequest extends React.Component<ISendRequestProps, ISen
   }
   private _onCancel = () => {
     // window.location.href = this.props.RedirectUrl;
-    window.location.replace("https://ccsdev01.sharepoint.com/sites/DMS/SitePages/Detail-List.aspx");
+    window.location.replace(this.props.RedirectUrl);
     this.setState({
       comments:"",
       approver:"",
@@ -88,7 +88,8 @@ export default class SendRequest extends React.Component<ISendRequestProps, ISen
         this.validator.hideMessages();
         
         this.setState({ RequestSend: "" });
-        setTimeout(() => this.setState({ RequestSend: 'none' }), 1000);
+        setTimeout(() => this.setState({ RequestSend: 'none' }), 3000);
+        window.location.replace(this.props.RedirectUrl);
   
         // this._onCancel();
     }
@@ -155,7 +156,7 @@ const CategoryOptions:IDropdownOption[]=[
          <br></br>
          <div></div>
            <div style={{display:"flex"}}>
-             <div>Document ID : NOT/SHML/INT-PRC/AM-00009</div>
+             <div style={{fontWeight:"bold"}}>Document ID : EMEC_1010_00001</div>
              <div style={{padding:"0 0 0 366px"}}>
             
                </div>
@@ -164,7 +165,7 @@ const CategoryOptions:IDropdownOption[]=[
          
         <div >
           
-          <Label >Document :  <a href={this.state.LinkToDoc}>NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</a></Label>
+          <Label >Document :  <a href={this.state.LinkToDoc}>EMEC_1010_00001_MigrationDocument.docx</a></Label>
           <div></div>
           <table>
             <tr>

@@ -352,7 +352,7 @@ public _delegateSubmit = () => {
                         <TimelineItem
                           key="002"
                           dateText="24 Jul 2021 "
-                          dateInnerStyle={{ background: '#61b8ff', color: '#000' }}
+                          dateInnerStyle={{ background: '#f34970', color: '#000' }}
                           bodyContainerStyle={{
                             background: '#ddd',
                             padding: '20px',
@@ -397,7 +397,7 @@ public _delegateSubmit = () => {
                   key="001"
                   dateText="23 Jul 2021"
                  // style={{ color: '#e86971' }}
-                  dateInnerStyle={{ background: '#76bb7f' }}
+                  dateInnerStyle={{ background: '#4c68ef' }}
                   lineColor={"#76bb7f"} 
                 >
                           <h3>Reviewed</h3>
@@ -416,7 +416,7 @@ public _delegateSubmit = () => {
                         <TimelineItem
                           key="004"
                           dateText="21 Jul 2021"
-                          dateInnerStyle={{ background: '#76bb7f' }}
+                          dateInnerStyle={{ background: '#bb76b9' }}
                         >
                           <h3>WorkFlow Started</h3>
                           <h4>NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</h4>
@@ -437,7 +437,7 @@ public _delegateSubmit = () => {
                         <TimelineItem
                           key="004"
                           dateText="21 Jul 2021"
-                          dateInnerStyle={{ background: '#76bb7f' }}
+                          dateInnerStyle={{ background: '#80b392' }}
                         >
                           <h3>Document Created</h3>
                           <h4>NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</h4>
@@ -474,13 +474,13 @@ public _delegateSubmit = () => {
           <div style={{padding: "0 25px 0px 29px"}}>
            <table  className={styles.tableModal}>
                             <tr>
-                              <th>Reviewer</th>
-                              <th>DueDate</th> 
-                              <th>Status</th>
-                              <th>Comments</th>
-                              <th>Reminder</th>
-                              <th>Cancel</th>
-                              <th>Delegate</th>
+                              <th style={{padding: "0 18px 0px 0px"}}>Reviewer</th>
+                              <th style={{padding: "0 18px 0px 0px"}}>DueDate</th> 
+                              <th style={{padding: "0 18px 0px 0px"}}>Status</th>
+                              <th style={{padding: "0 18px 0px 0px"}}>Comments</th>
+                              <th style={{padding: "0 18px 0px 0px"}}>Reminder</th>
+                              <th style={{padding: "0 18px 0px 0px"}}>Cancel</th>
+                              <th style={{padding: "0 18px 0px 0px"}}>Delegate</th>
                             </tr>
                             <tr  style={{border:"1px"}}>
                               <td>Jill</td>
@@ -738,10 +738,10 @@ public _delegateSubmit = () => {
           <div style={{padding: "0 25px 0px 29px"}}>
            <table >
                             <tr>
-                              <th>Reviewer</th>
-                              <th>DueDate</th> 
-                              <th>Status</th>
-                              <th>Comments</th>
+                              <th style={{padding: "0 18px 0px 0px"}}>Reviewer</th>
+                              <th style={{padding: "0 18px 0px 0px"}}>DueDate</th> 
+                              <th style={{padding: "0 18px 0px 0px"}}>Status</th>
+                              <th style={{padding: "0 18px 0px 0px"}}>Comments</th>
                              
                             </tr>
                             <tr>

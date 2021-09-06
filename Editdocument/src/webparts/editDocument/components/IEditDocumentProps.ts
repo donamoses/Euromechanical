@@ -4,5 +4,6 @@ export interface IEditDocumentProps {
   description: string;
   createdocument:string;
   project:string;
-  RedirectUrl:"https://ccsdev01.sharepoint.com/sites/DMS/SitePages/Detail-List.aspx";
+  RedirectUrl:string;
+  DocumentID:string;
 }

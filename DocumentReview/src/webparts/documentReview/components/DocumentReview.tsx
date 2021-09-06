@@ -68,17 +68,22 @@ export default class DocumentReview extends React.Component<IDocumentReviewProps
       this.validator.hideMessages();
       this.setState({ reviewDocument: "" });
       setTimeout(() => this.setState({ reviewDocument: 'none' }), 1000);
+      window.location.replace(this.props.RedirectUrl);
     }
     else {
       this.validator.showMessages();
       this.forceUpdate();
     }
 }
+private _docSave =()=>{  
+    window.location.replace(this.props.RedirectUrl); 
+  }
 private _cancel =()=>{
   this.setState({
     statuskey:"",
     comments:"",
   });
+  window.location.replace(this.props.RedirectUrl);
 }
 public _drpdwnStatus(option: { key: any; text: any }) {
   //console.log(option.key);
@@ -94,9 +99,9 @@ private _openRevisionHistory=()=>{
     const Status: IDropdownOption[] = [
 
       { key: 'Reviewed', text: 'Reviewed' },
-      { key: 'Cancelled', text: 'Cancelled' },
-     
-    ];
+      { key: 'Returned with comments', text: 'Returned with comments' },  
+      { key: 'Cancelled', text: 'Cancelled' },    
+  ];
     return (
       <div className={ styles.documentReview }>
          <div style={{ marginLeft: "auto",marginRight:"auto",width:"50rem" }}>
@@ -105,20 +110,19 @@ private _openRevisionHistory=()=>{
           <br></br>
          <div></div>
            <div style={{display:"flex"}}>
-             <div>Document ID : NOT/SHML/INT-PRC/AM-00009</div>
+             <div style={{fontWeight:"bold"}}>Document ID : EMEC_1010_00001</div>
              <div style={{padding:"0 0 0 366px"}}>
              <Link onClick={this._openRevisionHistory} underline>
              Revision History
             </Link> 
                </div>
            </div>
-           <br></br>      
-        
-          
+           <br></br>    
+                 
         
         <div style={{marginTop:"2px"}}>
          
-          <Label >Document :  <a href={this.state.LinkToDoc}>NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</a></Label>
+          <Label >Document :  <a href={this.state.LinkToDoc}>EMEC_1010_00001_MigrationDocument.docx</a></Label>
           
           <table>
           <tr>
@@ -132,7 +136,8 @@ private _openRevisionHistory=()=>{
             <tr>
               <td><Label>Requestor : SUBHA RAVEENDRAN </Label></td>
               <td><Label >Requested Date : 21 JUL 2021 </Label></td></tr> </table>
-              <table> <tr><td><Label> Requestor Comment:</Label>Requested to review the document </td></tr></table>
+              <table> <tr><td><Label> Requestor Comment:</Label>Requested to review the document.If we disable, "Prompt a message to the technician confirming the user's acknowledgement to the resolution", we are no longer presented with the "Close Request" prompt box:
+       </td></tr></table>
               <table  style={{ marginTop: '16px' }}>
             <tr  hidden={this.state.hideproject}>
               <td><Label>DCC : SUBHA RAVEENDRAN </Label></td>
@@ -142,7 +147,19 @@ private _openRevisionHistory=()=>{
             </tr>
             </table>         
           
-          
+            <table className={styles.tableClass}  style={{marginTop:"12px"}} >
+              <th>Reviewer
+              </th>
+              <th>Review Date
+              </th>
+              <th>Review Comment:
+              </th>
+                <tr className={styles.td} >
+                  <td style={{textAlign:"center"}}> SUBHA RAVEENDRAN </td>
+                  <td style={{textAlign:"center"}}> 21 JUL 2021 </td>
+                  <td style={{textAlign:"center"}} >Requested to approve the document</td>
+                </tr>
+          </table>
           </div>
           <div style={{ marginTop: '30px' }}>
           <Dropdown 
@@ -154,7 +171,7 @@ private _openRevisionHistory=()=>{
           selectedKey={this.state.statuskey}
           required />
           <div style={{ color: "#dc3545" }}>{this.validator.message("status", this.state.statuskey, "required")}{" "}</div> 
-            <TextField label="Comments" id="Comments" value={this.state.comments} onChange={this._commentChange} multiline autoAdjustHeight />
+            <TextField label="Comments" id="Comments" value={this.state.comments} onChange={this._commentChange} multiline autoAdjustHeight  required/>
             <br />
             <DialogFooter>
             <div style={{ display: this.state.reviewDocument }}>
@@ -170,7 +187,7 @@ private _openRevisionHistory=()=>{
                                     
                                     <DefaultButton id="b1" style={{ float: "right", borderRadius: "10px", border: "1px solid gray" }} onClick={this._cancel}>Cancel</DefaultButton >
                                     <DefaultButton id="b2" style={{  float: "right", marginRight: "10px", borderRadius: "10px", border: "1px solid gray" }}  onClick={this._docReview}>Submit</DefaultButton >
-                                    <DefaultButton id="b2" style={{ float: "right", marginRight: "10px", borderRadius: "10px", border: "1px solid gray" }}>Save</DefaultButton >
+                                    <DefaultButton id="b2" style={{ float: "right", marginRight: "10px", borderRadius: "10px", border: "1px solid gray" }} onClick={this._docSave}>Save</DefaultButton >
 
                                 
                             </tr>

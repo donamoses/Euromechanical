@@ -18,7 +18,7 @@ export interface ISendRequestWebPartProps {
   project:string;
 }
 
-export default class SendRequestWebPart extends BaseClientSideWebPart<ISendRequestWebPartProps> {
+export default class SendRequestWebPart extends BaseClientSideWebPart<ISendRequestProps> {
   public onInit(): Promise<void> {
     return super.onInit().then(_ => {
       sp.setup({
@@ -32,7 +32,8 @@ export default class SendRequestWebPart extends BaseClientSideWebPart<ISendReque
       {
         context: this.context,
         description: this.properties.description,
-        project:this.properties.project
+        project:this.properties.project,
+        RedirectUrl:this.properties.RedirectUrl,
       }
     );
 
@@ -60,6 +61,9 @@ export default class SendRequestWebPart extends BaseClientSideWebPart<ISendReque
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
+                }),
+                PropertyPaneTextField('RedirectUrl', {
+                  label: "RedirectUrl"
                 }),
                 PropertyPaneToggle('project',{
                   label:'Project',

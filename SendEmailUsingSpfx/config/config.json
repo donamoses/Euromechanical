@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "send-email-using-spfx-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/sendEmailUsingSpfx/SendEmailUsingSpfxWebPart.js",
+          "manifest": "./src/webparts/sendEmailUsingSpfx/SendEmailUsingSpfxWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "SendEmailUsingSpfxWebPartStrings": "lib/webparts/sendEmailUsingSpfx/loc/{locale}.js"
+  }
+}

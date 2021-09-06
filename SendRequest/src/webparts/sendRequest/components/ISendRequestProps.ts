@@ -3,4 +3,5 @@ export interface ISendRequestProps {
   description: string;
   context: WebPartContext;
   project:string;
+  RedirectUrl:string;
 }

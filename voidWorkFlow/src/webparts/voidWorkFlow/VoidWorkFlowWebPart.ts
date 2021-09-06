@@ -33,7 +33,8 @@ export default class VoidWorkFlowWebPart extends BaseClientSideWebPart<IVoidWork
         context: this.context,
         DueDateDefault:this.properties.DueDateDefault,
         RetentionPeriod:this.properties.RetentionPeriod,
-        project:this.properties.project
+        project:this.properties.project,
+        RedirectUrl:this.properties.RedirectUrl,
       }
     );
 
@@ -61,6 +62,9 @@ export default class VoidWorkFlowWebPart extends BaseClientSideWebPart<IVoidWork
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
+                }),
+                PropertyPaneTextField('RedirectUrl', {
+                  label: "RedirectUrl"
                 }),
                 PropertyPaneTextField('DueDateDefault', {
                   label: "Due Date Default In Days"

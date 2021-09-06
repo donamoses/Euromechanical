@@ -91,6 +91,7 @@ const iconButtonStyles = {
     color: theme.palette.neutralDark,
   },
 };
+const back: IIconProps = { iconName: 'ChromeBack' };
 export interface IEditDocumentState {
 
   docs: any[];
@@ -128,6 +129,9 @@ reviewed:string;
 showReviewModal:boolean;
 delegateUser:any;
 delagatePeoplePicker:string;
+selectTemplate:string;
+    selectTemplateKey:string;
+    hideExpiredate:string;
 }
 
 const pivot : Partial<IPivotStyles> = { root:{width:"100%"}};
@@ -172,6 +176,9 @@ export default class EditDocument extends React.Component<IEditDocumentProps,IEd
       showReviewModal:false,
       delegateUser:"",
       delagatePeoplePicker:"none",
+      selectTemplate:"",
+      selectTemplateKey:"",
+      hideExpiredate:"",
     };
     this._versionHistory=this._versionHistory.bind(this);
     //for time line
@@ -180,6 +187,7 @@ export default class EditDocument extends React.Component<IEditDocumentProps,IEd
     this._delegateClick=this._delegateClick.bind(this);
     this._delegateSubmit=this._delegateSubmit.bind(this);
     this._onCancel=this._onCancel.bind(this);
+    this._drpdwnSelectTemplate = this._drpdwnSelectTemplate.bind(this);
 
 }
   public async componentDidMount() {
@@ -196,7 +204,7 @@ export default class EditDocument extends React.Component<IEditDocumentProps,IEd
           this.setState({ hidecreate: true,hideedit:false,hideIfDocAttached:"none" });
           }
           if(this.props.project){
-          this.setState({hideproject:false});
+          this.setState({hideproject:false,hideaAppDatePic:"none",hideExpiredate:"none"});
           }
           this.getVersionHistory();
           this._getCurrentUser();
@@ -244,15 +252,24 @@ public templatechange(option: { key: any; }) {
   this.setState({ tkey: option.key });
 }
 private _onCreateDocChecked = (ev: React.FormEvent<HTMLInputElement>, isChecked?: boolean) => {
-  if (isChecked) { this.setState({ hideDirectPublish: "", }); }
-  else if (!isChecked) {
-      this.setState({ hideDirectPublish: "none", hideaAppDatePic: "none", });
-      if (this.state.directPublihCheck == true) {
-          this.setState({
-              directPublihCheck: false,
-          });
-      }
-  }
+  if(this.props.project){
+    if (isChecked) { this.setState({ hideDirectPublish: "none", }); }
+}
+else{
+    if (isChecked) { this.setState({ hideDirectPublish: "", }); }
+    else if (!isChecked) {
+        this.setState({ hideDirectPublish: "none", hideaAppDatePic: "none", });
+        if (this.state.directPublihCheck == true) {
+            this.setState({
+                directPublihCheck: false,
+            });
+        }
+    }
+
+}
+}
+private _expLeadPeriodChange = (ev: React.FormEvent<HTMLInputElement>, ExpLeadPeriod?: string) => {
+  this.setState({ ExpiryLeadPeriod: ExpLeadPeriod || '' });
 }
 private _onDirectPublishChecked = (ev: React.FormEvent<HTMLInputElement>, isChecked?: boolean) => {
   if (isChecked) { this.setState({ hideaAppDatePic: "", directPublihCheck: true }); }
@@ -263,15 +280,16 @@ private _onCreateDocument = () => {
 
       this.validator.hideMessages();
       this.setState({ DocumentAdded: "" });
-      setTimeout(() => this.setState({ DocumentAdded: 'none' }), 1000);
-
+      setTimeout(() => this.setState({ DocumentAdded: 'none' }), 2000);
+      window.location.replace(this.props.RedirectUrl);
 
       // this._onCancel();
   }
   else if (this.validator.fieldValid("Name")  && this.validator.fieldValid("publishFormat")) {
       this.validator.hideMessages();
       this.setState({ DocumentAdded: "" });
-      setTimeout(() => this.setState({ DocumentAdded: 'none' }), 1000);
+      setTimeout(() => this.setState({ DocumentAdded: 'none' }), 2000);
+      window.location.replace(this.props.RedirectUrl);
   }
   else {
       this.validator.showMessages();
@@ -281,7 +299,8 @@ private _onCreateDocument = () => {
 }
 private _onCancel = () => {
   // window.location.href = this.props.RedirectUrl;
-  window.location.replace("https://ccsdev01.sharepoint.com/sites/DMS/SitePages/Detail-List.aspx");
+  //window.location.replace("https://ccsdev01.sharepoint.com/sites/DMS/SitePages/Detail-List.aspx");
+  window.location.replace(this.props.RedirectUrl);
   this.setState({
     hideExpLeadPeriod: "none",
     title: "Organization Details",
@@ -338,11 +357,17 @@ this.setState({
 delagatePeoplePicker:"",
 });
 }
-
+public _back = () => {
+  window.location.replace(this.props.RedirectUrl);
+}
 public _delegateSubmit = () => {
 this.setState({
   delagatePeoplePicker:"none",
 });
+}
+public _drpdwnSelectTemplate(option: { key: any; text: any }) {
+  //console.log(option.key);
+  this.setState({ selectTemplateKey: option.key, selectTemplate: option.text });
 }
   public render(): React.ReactElement<IEditDocumentProps> {
     const BusinessUnit: IDropdownOption[] = [
@@ -370,6 +395,12 @@ this.setState({
       { key: '2', text: 'PDF' },
 
   ];
+  const selectTemplate: IDropdownOption[] = [
+
+    { key: '1', text: 'EMEC_1010_00001_MigrationDocument' },
+    { key: '2', text: 'EMEC_1010_00002_SRSDocument' },
+
+];
     return (
       <div className={ styles.editDocument }>        
           
@@ -377,31 +408,32 @@ this.setState({
               <PivotItem headerText="Document Info" >
                 <div style={{ marginLeft: "7%",marginRight:"auto",width:"28rem" }}>
                   {/* <div style={{fontSize:"18px",fontWeight:"bold",textAlign:"center"}}> Edit Document</div> */}
+                  <Label style={{fontWeight:"bold"}}>{this.props.DocumentID}</Label>
                   < TextField required id="t1"
                         label="Title"                       
                         onChange={this._titleChange}
                         //placeholder="Organization Details"                        
-                        value={"Migration Policy"}>                          
+                        value={"Migration Document"}>                          
                   </TextField>
                     <div style={{ color: "#dc3545" }}>{this.validator.message("Name", this.state.title, "required|alpha_num_space")}{" "}</div>
                     < TextField 
                         label="Business Unit"                  
-                        value={"BU1"} readOnly>  
+                        value={"Advanced Technologies and Solution"} readOnly>  
                                               
                   </TextField>
                   < TextField 
                         label="Department"                  
-                        value={"HR"} readOnly>  
+                        value={"Corporate"} readOnly>  
                                               
                   </TextField>
                   < TextField 
                         label="Category"                  
-                        value={"Cat1"} readOnly>  
+                        value={"Corporate Records"} readOnly>  
                                               
                   </TextField>
                   < TextField  
                         label="Sub Category"                  
-                        value={"SubCat1"} readOnly>  
+                        value={"Corporate Structure"} readOnly>  
                                               
                   </TextField>
                   {/* <Dropdown id="t3" label="Business Unit"                        
@@ -492,7 +524,9 @@ this.setState({
                    <div style={{display:this.state.hideIfDocAttached}}>
                         <Label >Select a Template:</Label>  <Dropdown id="t7"
                             placeholder="Select an option"
-                            options={this.state.docs} onChanged={this.templatechange}
+                            options={selectTemplate} 
+                            selectedKey={this.state.selectTemplateKey}
+                            onChanged={this._drpdwnSelectTemplate}
                         />
                         <Label >Upload Document:</Label> <input type="file" id="myfile" ></input>
                         <div style={{ padding: "14px 0px 0 0",display:"flex" }} >
@@ -542,8 +576,9 @@ this.setState({
                         </table>
 
                     </div>
+                    <div >
                     <div style={{ display: "flex" }}>
-                        <div>
+                        <div style={{ display: this.state.hideExpiredate }}>
                             <DatePicker label="Expiry Date"
                                 style={{ width: '162px' }}
                                 value={this.state.expiredate}
@@ -555,8 +590,11 @@ this.setState({
                         <div style={{ padding: " 0 0 0 19px", display: this.state.hideExpLeadPeriod }}>
                             < TextField id="ExpiryLeadPeriod"
                                 label="Expiry Lead  Period"                                
-                                value={this.state.ExpiryLeadPeriod} >
+                                value={this.state.ExpiryLeadPeriod} 
+                                onChange={this._expLeadPeriodChange}>
+                                
                             </TextField>
+                        </div>
                         </div>
                     </div>
                     <div style={{ padding: "9px 0 0 0" }}>
@@ -596,15 +634,19 @@ this.setState({
                           {/* {this._versionHistory()}                        */}                     
                         
                          
-                        <div>                          
-                        <iframe src={this.state.siteurl + "/_layouts/15/Versions.aspx?list=%7Bda53146b-3f5c-4321-926e-c3c2adbff323%7D&ID=1&IsDlg=0"} style={{overflow: "hidden",width:"100%",border:"white"}}></iframe>
+                        <div>   
+                        <IconButton iconProps={back} title="Back" onClick={this._back}  />                       
+                        <iframe src={"https://ccsdev01.sharepoint.com/sites/TrialTest/_layouts/15/Versions.aspx?list=%7Bda53146b-3f5c-4321-926e-c3c2adbff323%7D&ID=1&IsDlg=0"} style={{overflow: "hidden",width:"100%",border:"white"}}></iframe>
                         </div>
+
                         </PivotItem>
 
       {/* vertical Timeline */}    
 
               <PivotItem headerText="Revision History">
-              <div style={{ marginLeft: "7%",marginRight:"auto",width:"30rem" }}>                  
+                
+              <div style={{ marginLeft: "7%",marginRight:"auto",width:"30rem" }}>  
+              <IconButton iconProps={back} title="Back" onClick={this._back}  />                           
            <Timeline lineColor={'#76bb7f'}>       
                 
                 <TimelineItem
@@ -619,7 +661,7 @@ this.setState({
                   }}
                 >
                   <h3 style={{ color: '#61b8ff' }}>Under Review</h3>
-                  <h4 style={{ color: '#61b8ff' }}>NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</h4>
+                  <h4 style={{ color: '#61b8ff' }}>EMEC_1010_00001_MigrationDocument</h4>
                   <p style={{fontSize:'12px'}}>
                                           <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
                                             Approved  :  Sunil John
@@ -639,7 +681,7 @@ this.setState({
                   lineColor={"#76bb7f"} 
                 >
                   <h3>Published</h3>
-                  <h4>NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</h4>
+                  <h4>EMEC_1010_00001_MigrationDocument</h4>
                   <p style={{fontSize:'12px'}}>
                                       Reviewer  : Subha Raveendran
                                       <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
@@ -659,7 +701,7 @@ this.setState({
                   lineColor={"#76bb7f"} 
                 >
                           <h3>Reviewed</h3>
-                          <h4>NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</h4>
+                          <h4>EMEC_1010_00001_MigrationDocument</h4>
                           <p style={{fontSize:'12px'}}>
                                                   Requestor: Subha Raveendran
                                                   <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>                                                  
@@ -677,7 +719,7 @@ this.setState({
                   dateInnerStyle={{ background: '#76bb7f' }}
                 >
                   <h3>WorkFlow Started</h3>
-                  <h4>NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</h4>
+                  <h4>EMEC_1010_00001_MigrationDocument</h4>
                   <p style={{fontSize:'12px'}}>
                                           <div> Requestor : Subha Raveendran</div>
                                           <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
@@ -698,7 +740,7 @@ this.setState({
                   dateInnerStyle={{ background: '#76bb7f' }}
                 >
                   <h3>Document Created</h3>
-                  <h4>NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</h4>
+                  <h4>EMEC_1010_00001_MigrationDocument</h4>
                   <p style={{fontSize:'12px'}}>
                                     <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
                                       Originator :Sunil John
@@ -732,10 +774,10 @@ this.setState({
                                     <th>Reviewer</th>
                                     <th>DueDate</th> 
                                     <th>Status</th>
-                                    <th>Comments</th>
-                                    <th>Reminder</th>
-                                    <th>Cancel</th>
-                                    <th>Delegate</th>
+                                    <th style={{padding: "0 18px 0px 0px"}}>Comments</th>
+                                    <th style={{padding: "0 18px 0px 0px"}}>Reminder</th>
+                                    <th style={{padding: "0 18px 0px 0px"}}>Cancel</th>
+                                    <th style={{padding: "0 18px 0px 0px"}}>Delegate</th>
                                   </tr>
                                   <tr  style={{border:"1px"}}>
                                     <td>Jill</td>
@@ -1004,7 +1046,7 @@ this.setState({
                               <td >24 Jul 2021</td>
                               <td>Reviewed</td>
                               <td><TooltipHost
-                              content=""
+                              content=" This was an excellent document on very thorough research "
                               // This id is used on the tooltip itself, not the host
                               // (so an element with this id only exists when the tooltip is shown)                              
                               calloutProps={calloutProps}
@@ -1042,7 +1084,427 @@ this.setState({
                    </div>
             </div>  
     </PivotItem>                                                                                                       
-                        
+
+
+
+    <PivotItem headerText="Transmittal History">
+                
+                <div style={{ marginLeft: "7%",marginRight:"auto",width:"30rem" }}>  
+                <IconButton iconProps={back} title="Back" onClick={this._back}  />                           
+             <Timeline lineColor={'#76bb7f'}>       
+                  
+                  <TimelineItem
+                    key="002"
+                    dateText="24 Jul 2021 "
+                    dateInnerStyle={{ background: '#61b8ff', color: '#000' }}
+                    bodyContainerStyle={{
+                      background: '#ddd',
+                      padding: '20px',
+                      borderRadius: '8px',
+                      boxShadow: '0.5rem 0.5rem 2rem 0 rgba(0, 0, 0, 0.2)',
+                    }}
+                  >
+                    <h3 style={{ color: '#61b8ff' }}>OUT -Acknowledged</h3>
+                    <h4 style={{ color: '#61b8ff' }}>EMEC_1010_00001_MigrationDocument</h4>
+                    <p style={{fontSize:'12px'}}>
+                                            <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
+                                              Customer
+                                            </div>
+                                           
+                                            <PrimaryButton text="Details" onClick={this._versionHistory}></PrimaryButton>
+                                          </p>
+                  </TimelineItem>
+                  <TimelineItem
+                    key="001"
+                    dateText="23 Jul 2021"
+                    //style={{ color: '#e86971' }}
+                    dateInnerStyle={{ background: '#76bb7f' }}
+                    lineColor={"#76bb7f"} 
+                  >
+                    <h3>OUT</h3>
+                    <h4>EMEC_1010_00001_MigrationDocument</h4>
+                    <p style={{fontSize:'12px'}}>
+                                        Customer
+                                        
+                                        <br></br>
+                                    </p>
+          </TimelineItem>
+                  <TimelineItem
+                    key="001"
+                    dateText="23 Jul 2021"
+                  // style={{ color: '#e86971' }}
+                    dateInnerStyle={{ background: '#76bb7f' }}
+                    lineColor={"#76bb7f"} 
+                  >
+                            <h3>IN</h3>
+                            <h4>EMEC_1010_00001_MigrationDocument</h4>
+                            <p style={{fontSize:'12px'}}>
+                                                    Sub-Contaractor
+                                                    <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>                                                  
+                                                    </div>
+                                                   
+                                                  </p>
+                          </TimelineItem>
+                  <TimelineItem
+                    key="004"
+                    dateText="21 Jul 2021"
+                    dateInnerStyle={{ background: '#76bb7f' }}
+                  >
+                    <h3>OUT</h3>
+                    <h4>EMEC_1010_00001_MigrationDocument</h4>
+                    <p style={{fontSize:'12px'}}>
+                                            <div> Sub-Contractor</div>
+                                            
+                                            <br></br>
+                                          </p>
+                  </TimelineItem>
+                  <TimelineItem
+                    key="004"
+                    dateText="21 Jul 2021"
+                    dateInnerStyle={{ background: '#76bb7f' }}
+                  >
+                    <h3>IN</h3>
+                    <h4>EMEC_1010_00001_MigrationDocument</h4>
+                    <p style={{fontSize:'12px'}}>
+                                      <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
+                                        Sub-Contactor
+                                      </div>
+                                      <div style={{ display: 'flex', margin: "0px 0px 0px 0px" }}>
+  
+                                      </div>
+                                      <br></br>
+                                      </p>
+                  </TimelineItem>
+                  </Timeline>
+              <div style={{display:this.state.tableShow}} >
+              <Modal
+                isOpen={this.state.showModal}
+                onDismiss={this._closeModal}
+                containerClassName={contentStyles.container}
+              >
+  
+                <div className={contentStyles.header}>
+                  <span style={{textAlign:"center",fontSize:"17px"}}></span>
+                  <IconButton
+                    iconProps={cancelIcon}
+                    ariaLabel="Close popup modal"
+                    onClick={this._closeModal}
+                    styles={iconButtonStyles}
+                  />
+                  </div>
+                  <div style={{padding: "0 25px 0px 29px"}}>
+                  <table  className={styles.tableModal}>
+                                    <tr>
+                                      <th>Reviewer</th>
+                                      <th>DueDate</th> 
+                                      <th>Status</th>
+                                      <th style={{padding: "0 18px 0px 0px"}}>Comments</th>
+                                      <th style={{padding: "0 18px 0px 0px"}}>Reminder</th>
+                                      <th style={{padding: "0 18px 0px 0px"}}>Cancel</th>
+                                      <th style={{padding: "0 18px 0px 0px"}}>Delegate</th>
+                                    </tr>
+                                    <tr  style={{border:"1px"}}>
+                                      <td>Jill</td>
+                                      <td style={{color: "red"}}>24 Jul 2021</td>
+                                      <td>Under Review</td>
+                                      <td><TooltipHost
+                                      content="Comment"
+                                      // This id is used on the tooltip itself, not the host
+                                      // (so an element with this id only exists when the tooltip is shown)                              
+                                      calloutProps={calloutProps}
+                                      styles={hostStyles}
+                                    >
+                                      <IconButton iconProps={Comment} title=" " ariaLabel=" " />
+                                    </TooltipHost></td>
+                                      <td><TooltipHost
+                                      content="ReminderTime"
+                                      // This id is used on the tooltip itself, not the host
+                                      // (so an element with this id only exists when the tooltip is shown)                              
+                                      calloutProps={calloutProps}
+                                      styles={hostStyles}
+                                    >
+                                      <IconButton iconProps={ReminderTime} title=" " ariaLabel=" " />
+                                    </TooltipHost></td>
+                                    <td><TooltipHost
+                                      content="Cancel"
+                                      // This id is used on the tooltip itself, not the host
+                                      // (so an element with this id only exists when the tooltip is shown)                              
+                                      calloutProps={calloutProps}
+                                      styles={hostStyles}
+                                    >
+                                      <IconButton iconProps={Cancel} title=" " ariaLabel=" " />
+                                    </TooltipHost></td>
+                                      <td><TooltipHost
+                                      content="Share"
+                                      // This id is used on the tooltip itself, not the host
+                                      // (so an element with this id only exists when the tooltip is shown)                              
+                                      calloutProps={calloutProps}
+                                      styles={hostStyles}
+                                    >
+                                      <IconButton iconProps={Share} title=" " ariaLabel=" "  onClick={this._delegateClick} />
+                                    </TooltipHost>
+                                      </td>
+                                      <td> <div style={{display:this.state.delagatePeoplePicker}}>
+                                  <div style={{display:"flex"}}>
+                                  <PeoplePicker
+                                  context={this.props.context}
+                                  titleText="Delegate to "
+                                  personSelectionLimit={1}
+                                  groupName={""} // Leave this blank in case you want to filter from all users    
+                                  showtooltip={true}
+                                  disabled={false}
+                                  ensureUser={true}
+                                  onChange={this._delegatePeoplePicker}
+                                  // selectedItems={this._getVerifier}
+                                  //defaultSelectedUsers={[this.state.approver]}
+                                  showHiddenInUI={false}
+                                  required={false}
+                                  principalTypes={[PrincipalType.User]}
+                                  resolveDelay={1000}
+                                  />
+                                  <div style={{marginTop:"26px",marginLeft:"20px"}}>
+                                  <PrimaryButton text="Delegate" onClick={this._delegateSubmit}/>
+                                  </div>
+                                  </div>
+                                    </div>
+                        </td>
+                                    </tr>
+                                    <tr>
+                                      <td>Eve Maria Thomas</td>
+                                      <td>24 Jul 2021</td>
+                                      <td>Returned with comments</td>
+                                      <td><TooltipHost
+                                      content="• Needs to improve the amount of time spent on lesson planning [or curriculum development or marking or insert type of task] • Capable of stronger performance in training delivery especially in [insert area of weakness] •"
+                                      // This id is used on the tooltip itself, not the host
+                                      // (so an element with this id only exists when the tooltip is shown)                              
+                                      calloutProps={calloutProps}
+                                      styles={hostStyles}
+                                    >
+                                      <IconButton iconProps={Comment} title=" " ariaLabel=" " />
+                                    </TooltipHost></td>
+                                      <td><TooltipHost
+                                      content="Document is reviewed"
+                                      // This id is used on the tooltip itself, not the host
+                                      // (so an element with this id only exists when the tooltip is shown)                              
+                                      calloutProps={calloutProps}
+                                      styles={hostStyles}
+                                    >
+                                      <IconButton iconProps={ReminderTime} title=" " ariaLabel=" " />
+                                    </TooltipHost></td>
+                                    <td><TooltipHost
+                                      content="Cancel"
+                                      // This id is used on the tooltip itself, not the host
+                                      // (so an element with this id only exists when the tooltip is shown)                              
+                                      calloutProps={calloutProps}
+                                      styles={hostStyles}
+                                    >
+                                      <IconButton iconProps={Cancel} title=" " ariaLabel=" " />
+                                    </TooltipHost></td>
+                                      <td><TooltipHost
+                                      content="Share"
+                                      // This id is used on the tooltip itself, not the host
+                                      // (so an element with this id only exists when the tooltip is shown)                              
+                                      calloutProps={calloutProps}
+                                      styles={hostStyles}
+                                    >
+                                      <IconButton iconProps={Share} title=" " ariaLabel=" " />
+                                    </TooltipHost></td>
+                                    </tr>
+                                    <tr>
+                                      <td>John</td>
+                                      <td style={{color: "red"}}>24 Jul 2021</td>
+                                      <td>Under Review</td>
+                                      <td><TooltipHost
+                                      content="Comment"
+                                      // This id is used on the tooltip itself, not the host
+                                      // (so an element with this id only exists when the tooltip is shown)                              
+                                      calloutProps={calloutProps}
+                                      styles={hostStyles}
+                                    >
+                                      <IconButton iconProps={Comment} title=" " ariaLabel=" " />
+                                    </TooltipHost></td>
+                                      <td><TooltipHost
+                                      content="ReminderTime"
+                                      // This id is used on the tooltip itself, not the host
+                                      // (so an element with this id only exists when the tooltip is shown)                              
+                                      calloutProps={calloutProps}
+                                      styles={hostStyles}
+                                    >
+                                      <IconButton iconProps={ReminderTime} title=" " ariaLabel=" " />
+                                    </TooltipHost></td>
+                                    <td><TooltipHost
+                                      content="Cancel"
+                                      // This id is used on the tooltip itself, not the host
+                                      // (so an element with this id only exists when the tooltip is shown)                              
+                                      calloutProps={calloutProps}
+                                      styles={hostStyles}
+                                    >
+                                      <IconButton iconProps={Cancel} title=" " ariaLabel=" " />
+                                    </TooltipHost></td>
+                                      <td><TooltipHost
+                                      content="Share"
+                                      // This id is used on the tooltip itself, not the host
+                                      // (so an element with this id only exists when the tooltip is shown)                              
+                                      calloutProps={calloutProps}
+                                      styles={hostStyles}
+                                    >
+                                      <IconButton iconProps={Share} title=" " ariaLabel=" " />
+                                    </TooltipHost></td>
+                                    </tr>
+                                    <tr>
+                                      <td>Smith Manuel Ebraham</td>
+                                      <td>24 Jul 2021</td>
+                                      <td>Reviewed</td>
+                                      <td><TooltipHost
+                                      content="The document is reviewed."
+                                      // This id is used on the tooltip itself, not the host
+                                      // (so an element with this id only exists when the tooltip is shown)                              
+                                      calloutProps={calloutProps}
+                                      styles={hostStyles}
+                                    >
+                                      <IconButton iconProps={Comment} title=" " ariaLabel=" " />
+                                    </TooltipHost></td>
+                                      <td><TooltipHost
+                                      content="ReminderTime"
+                                      // This id is used on the tooltip itself, not the host
+                                      // (so an element with this id only exists when the tooltip is shown)                              
+                                      calloutProps={calloutProps}
+                                      styles={hostStyles}
+                                    >
+                                      <IconButton iconProps={ReminderTime} title=" " ariaLabel=" " disabled />
+                                    </TooltipHost></td>
+                                    <td><TooltipHost
+                                      content="Cancel"
+                                      // This id is used on the tooltip itself, not the host
+                                      // (so an element with this id only exists when the tooltip is shown)                              
+                                      calloutProps={calloutProps}
+                                      styles={hostStyles}
+                                    >
+                                      <IconButton iconProps={Cancel} title=" " ariaLabel=" " disabled/>
+                                    </TooltipHost></td>
+                                      <td><TooltipHost
+                                      content="Share"
+                                      // This id is used on the tooltip itself, not the host
+                                      // (so an element with this id only exists when the tooltip is shown)                              
+                                      calloutProps={calloutProps}
+                                      styles={hostStyles}
+                                    >
+                                      <IconButton iconProps={Share} title=" " ariaLabel=" " disabled/>
+                                    </TooltipHost></td>
+                                    </tr>
+                                    <tr>
+                                      <td>Sam</td>
+                                      <td>24 Jul 2021</td>
+                                      <td>Reviewed</td>
+                                      <td><TooltipHost
+                                      content="The document is reviewed."
+                                      // This id is used on the tooltip itself, not the host
+                                      // (so an element with this id only exists when the tooltip is shown)                              
+                                      calloutProps={calloutProps}
+                                      styles={hostStyles}
+                                    >
+                                      <IconButton iconProps={Comment} title=" " ariaLabel=" " />
+                                    </TooltipHost></td>
+                                      <td><TooltipHost
+                                      content="ReminderTime"
+                                      // This id is used on the tooltip itself, not the host
+                                      // (so an element with this id only exists when the tooltip is shown)                              
+                                      calloutProps={calloutProps}
+                                      styles={hostStyles}
+                                    >
+                                      <IconButton iconProps={ReminderTime} title=" " ariaLabel=" " disabled />
+                                    </TooltipHost></td>
+                                    <td><TooltipHost
+                                      content="Cancel"
+                                      // This id is used on the tooltip itself, not the host
+                                      // (so an element with this id only exists when the tooltip is shown)                              
+                                      calloutProps={calloutProps}
+                                      styles={hostStyles}
+                                    >
+                                      <IconButton iconProps={Cancel} title=" " ariaLabel=" " disabled/>
+                                    </TooltipHost></td>
+                                      <td><TooltipHost
+                                      content="Share"
+                                      // This id is used on the tooltip itself, not the host
+                                      // (so an element with this id only exists when the tooltip is shown)                              
+                                      calloutProps={calloutProps}
+                                      styles={hostStyles}
+                                    >
+                                      <IconButton iconProps={Share} title=" " ariaLabel=" " disabled/>
+                                    </TooltipHost></td>
+                                    </tr>
+                                  </table> 
+                
+                  <br />
+                  <br />
+                </div>
+              </Modal>
+                </div>
+              <div style={{display:this.state.reviewed}}>
+          <Modal
+          isOpen={this.state.showReviewModal}
+          onDismiss={this._closeModal}
+          containerClassName={contentStyles.container}
+        >
+  
+          <div className={contentStyles.header1}>
+            <span style={{textAlign:"center",fontSize:"17px"}}>Review Details</span>
+            <IconButton
+              iconProps={cancelIcon}
+              ariaLabel="Close popup modal"
+              onClick={this._closeModal}
+              styles={iconButtonStyles}
+            />
+            </div>
+            <div style={{padding: "0 25px 0px 29px"}}>
+             <table >
+                              <tr>
+                                <th>Reviewer</th>
+                                <th>DueDate</th> 
+                                <th>Status</th>
+                                <th>Comments</th>
+                               
+                              </tr>
+                              <tr>
+                                <td>Jill</td>
+                                <td >24 Jul 2021</td>
+                                <td>Reviewed</td>
+                                <td><TooltipHost
+                                content=" This was an excellent document on very thorough research "
+                                // This id is used on the tooltip itself, not the host
+                                // (so an element with this id only exists when the tooltip is shown)                              
+                                calloutProps={calloutProps}
+                                styles={hostStyles}
+                              >
+                                <IconButton iconProps={Comment} title=" " ariaLabel=" " />
+                              </TooltipHost></td>
+                              
+                              </tr>
+                              <tr>
+                                <td>Robert Willam </td>
+                                <td >24 Jul 2021</td>
+                                <td>Reviewed</td>
+                                <td><TooltipHost
+                                content="This was an excellent document on very thorough research."
+                                // This id is used on the tooltip itself, not the host
+                                // (so an element with this id only exists when the tooltip is shown)                              
+                                calloutProps={calloutProps}
+                                styles={hostStyles}
+                              >
+                                <IconButton iconProps={Comment} title=" " ariaLabel=" " />
+                              </TooltipHost></td>
+                              
+                              </tr>
+                              </table>
+                              </div>                            
+                              </Modal>       
+                         
+                     </div>
+              </div>  
+      </PivotItem>     
+
+
+                  
         </Pivot>
     </div>
     );

@@ -17,7 +17,7 @@ export interface IDocumentApprovalWebPartProps {
   project: string;
 }
 
-export default class DocumentApprovalWebPart extends BaseClientSideWebPart<IDocumentApprovalWebPartProps> {
+export default class DocumentApprovalWebPart extends BaseClientSideWebPart<IDocumentApprovalProps> {
   public onInit(): Promise<void> {
     return super.onInit().then(_ => {
       sp.setup({
@@ -31,7 +31,8 @@ export default class DocumentApprovalWebPart extends BaseClientSideWebPart<IDocu
       {
         context: this.context,
         description: this.properties.description,
-        project:this.properties.project
+        project:this.properties.project,
+        RedirectUrl:this.properties.RedirectUrl,
       }
     );
 
@@ -59,6 +60,9 @@ export default class DocumentApprovalWebPart extends BaseClientSideWebPart<IDocu
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
+                }),
+                PropertyPaneTextField('RedirectUrl', {
+                  label: "RedirectUrl"
                 }),
                 PropertyPaneToggle('project',{
                   label:'Project',

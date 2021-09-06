@@ -3,4 +3,5 @@ export interface IDocumentApprovalProps {
   description: string;
   project: string;
   context: WebPartContext;
+  RedirectUrl:string;
 }

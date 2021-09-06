@@ -79,15 +79,17 @@ export default class VoidWorkFlow extends React.Component<IVoidWorkFlowProps,IVo
     this.setState({
       comments:"",
       approver:"",
-    });}
+    });
+    window.location.replace(this.props.RedirectUrl);
+  }
     private _submitVoidWorkFlow = () => {
       if (this.validator.fieldValid("Approver") ) {
 
         this.validator.hideMessages();
         
         this.setState({ RequestSend: "" });
-        setTimeout(() => this.setState({ RequestSend: 'none' }), 1000);
-  
+        setTimeout(() => this.setState({ RequestSend: 'none' }), 3000);
+        window.location.replace(this.props.RedirectUrl);
         // this._onCancel();
     }
    
@@ -122,14 +124,14 @@ private _openRevisionHistory=()=>{
            <div><h3>Void workFlow request form</h3></div> 
            <br></br>
            <div style={{display:"flex"}}>
-             <div>Document ID : NOT/SHML/INT-PRC/AM-00009</div>
+             <div style={{fontWeight:"bold"}}>Document ID : EMEC_1010_00001</div>
              <div style={{padding:"0 0 0 366px"}}>
              <Link onClick={this._openRevisionHistory} underline>
              Revision History
             </Link></div>
            </div>
            <br></br>
-           <Label >Document Name:  <a href={this.state.LinkToDoc}>NOT/SHML/INT-PRC/AM-00009 Migration Policy.docx</a></Label>
+           <Label >Document Name:  <a href={this.state.LinkToDoc}>EMEC_1010_00001_MigrationDocument.docx</a></Label>
            
            <div >
              <table style={{width:"100%"}}>
@@ -195,7 +197,7 @@ private _openRevisionHistory=()=>{
            
                   <table>
 
-                  <tr><td> <TextField label="Comments" id="Comments" multiline autoAdjustHeight value={this.state.comments}onChange={this._commentsChange}  /></td></tr>
+                  <tr><td> <TextField label="Comments" id="Comments" multiline autoAdjustHeight value={this.state.comments}onChange={this._commentsChange}  required/></td></tr>
 
                   </table>
                 

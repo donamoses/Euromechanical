@@ -130,4 +130,12 @@ font-size: 12px;
       display: inline-block;
     }
   }
+  .tableClass {
+    border: 1px solid black;
+    border-collapse: collapse;
+    
+    .td{
+      text-align: center;
+    }
+  }
 }
