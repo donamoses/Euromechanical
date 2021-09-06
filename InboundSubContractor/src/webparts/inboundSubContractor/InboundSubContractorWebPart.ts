@@ -13,6 +13,7 @@ import { IInboundSubContractorProps } from './components/IInboundSubContractorPr
 import { sp } from '@pnp/sp';
 export interface IInboundSubContractorWebPartProps {
   description: string;
+  RedirectUrl: string;
 }
 
 export default class InboundSubContractorWebPart extends BaseClientSideWebPart<IInboundSubContractorWebPartProps> {
@@ -29,6 +30,7 @@ export default class InboundSubContractorWebPart extends BaseClientSideWebPart<I
       {
         description: this.properties.description,
         context: this.context,
+        RedirectUrl:this.properties.RedirectUrl
       }
     );
 
@@ -48,7 +50,8 @@ export default class InboundSubContractorWebPart extends BaseClientSideWebPart<I
       pages: [
         {
           header: {
-            description: strings.PropertyPaneDescription
+            description: strings.PropertyPaneDescription,
+            
           },
           groups: [
             {
@@ -56,6 +59,9 @@ export default class InboundSubContractorWebPart extends BaseClientSideWebPart<I
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
+                }),
+                PropertyPaneTextField('RedirectUrl', {
+                  label: 'RedirectUrl'
                 })
               ]
             }

@@ -34,7 +34,7 @@ export default class InboundSubContractor extends React.Component<IInboundSubCon
       AddIndex:true,
       AddDoc:true,
     });
-   
+    window.location.replace(this.props.RedirectUrl);
   }
   public render(): React.ReactElement<IInboundSubContractorProps> {
     const DeleteIcon: IIconProps = { iconName: 'Delete' };
@@ -56,7 +56,7 @@ export default class InboundSubContractor extends React.Component<IInboundSubCon
     return (
       <div className={ styles.inboundSubContractor }>
          <div style={{ marginLeft: "auto",marginRight:"auto",width:"50rem" }}>
-         <div style={{fontWeight:"bold",fontSize:"15px",textAlign:"center"}}> Inbound Transmittal from Euromechanical</div>
+         <div style={{fontWeight:"bold",fontSize:"15px",textAlign:"center"}}> Inbound Transmittal from ADNOC</div>
         <div className={styles.row}>
         
         <div style={{display:"flex",margin:"7px"}}>
@@ -75,6 +75,9 @@ export default class InboundSubContractor extends React.Component<IInboundSubCon
          className={styles['ms-SearchBox']}/>  
         </div>
         <hr  style={{marginTop:"20px"}}/>
+        <div style={{display:"flex",margin:"7px"}}>
+        <Label >Upload Document:</Label> <input  type="file" id="myfile"  style={{marginLeft:"-105px",padding:"33px 0px 0px 0px"}}></input>
+        </div>
         <div style={{display:"flex",margin:"7px"}}> 
           <Dropdown 
           style={{ width: '300px',marginRight:'76px' }}
